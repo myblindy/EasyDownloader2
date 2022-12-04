@@ -1,0 +1,101 @@
+﻿<Page
+    x:Class="ED2.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:ED2.Helpers"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    mc:Ignorable="d"
+    Margin="30,0">
+    <Page.Resources>
+        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+    </Page.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" x:Uid="Settings_Title" Style="{StaticResource PageTitleStyle}" />
+        <StackPanel Grid.Row="1" x:Name="ContentArea">
+            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                <TextBlock>Save Folders</TextBlock>
+
+                <Grid Margin="{StaticResource XSmallTopMargin}" ColumnSpacing="5" RowSpacing="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock FontSize="15" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Horizontal:</TextBlock>
+                    <TextBox FontSize="15" Grid.Row="0" Grid.Column="1" Margin="20,0,0,0" Text="{x:Bind ViewModel.MainViewModel.HorizontalSaveFolder, Mode=TwoWay}"/>
+                    <Button FontSize="15" Grid.Row="0" Grid.Column="2" Command="{x:Bind ViewModel.BrowseHorizontalSaveFolderCommand}">...</Button>
+                    <TextBlock FontSize="15" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Vertical:</TextBlock>
+                    <TextBox FontSize="15" Grid.Row="1" Grid.Column="1" Margin="20,0,0,0" Text="{x:Bind ViewModel.MainViewModel.VerticalSaveFolder, Mode=TwoWay}"/>
+                    <Button FontSize="15" Grid.Row="1" Grid.Column="2" Command="{x:Bind ViewModel.BrowseVerticalSaveFolderCommand}">...</Button>
+                    <TextBlock FontSize="15" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Square:</TextBlock>
+                    <TextBox FontSize="15" Grid.Row="2" Grid.Column="1" Margin="20,0,0,0" Text="{x:Bind ViewModel.MainViewModel.SquareSaveFolder, Mode=TwoWay}"/>
+                    <Button FontSize="15" Grid.Row="2" Grid.Column="2" Command="{x:Bind ViewModel.BrowseSquareSaveFolderCommand}">...</Button>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                <TextBlock x:Uid="Settings_Theme" />
+
+                <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                    <RadioButton
+                        x:Uid="Settings_Theme_Light"
+                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Light</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                    <RadioButton
+                        x:Uid="Settings_Theme_Dark"
+                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                    <RadioButton
+                        x:Uid="Settings_Theme_Default"
+                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
+                        FontSize="15"
+                        GroupName="AppTheme">
+                        <RadioButton.CommandParameter>
+                            <xaml:ElementTheme>Default</xaml:ElementTheme>
+                        </RadioButton.CommandParameter>
+                    </RadioButton>
+                </StackPanel>
+            </StackPanel>
+
+            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+            <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
+
+                <TextBlock
+                    x:Uid="Settings_AboutDescription"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Style="{ThemeResource BodyTextBlockStyle}" />
+                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Page>

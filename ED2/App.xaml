@@ -1,0 +1,21 @@
+﻿<Application
+    x:Class="ED2.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:winuiconv="using:CommunityToolkit.WinUI.UI.Converters">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="/Styles/FontSizes.xaml" />
+                <ResourceDictionary Source="/Styles/Thickness.xaml" />
+                <ResourceDictionary Source="/Styles/TextBlock.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <winuiconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <winuiconv:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+            <winuiconv:StringFormatConverter x:Key="StringFormatConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
