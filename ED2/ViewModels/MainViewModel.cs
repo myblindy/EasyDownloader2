@@ -1,16 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI.UI;
-using ED2.Contracts.Services;
-using ED2.Helpers;
-using ED2.Models;
-using ED2.Sources;
-using Microsoft.UI.Dispatching;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Text.RegularExpressions;
-
-namespace ED2.ViewModels;
+﻿namespace ED2.ViewModels;
 
 public partial class MainViewModel : ObservableRecipient
 {

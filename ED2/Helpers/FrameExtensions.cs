@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
-
-namespace ED2.Helpers;
+﻿namespace ED2.Helpers;
 
 public static class FrameExtensions
 {

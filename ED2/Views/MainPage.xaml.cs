@@ -1,12 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using ED2.Contracts.Services;
-using ED2.Models;
-using ED2.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using System.Diagnostics;
-
-namespace ED2.Views;
+﻿namespace ED2.Views;
 
 public sealed partial class MainPage : Page
 {
@@ -17,6 +9,14 @@ public sealed partial class MainPage : Page
     public MainPage()
     {
         InitializeComponent();
+
+        //ViewModel.PropertyChanged += (s, e) =>
+        //{
+        //    if (e.PropertyName is nameof(ViewModel.IsOpening) && ViewModel.IsOpening)
+        //        _ = FocusManager.TryFocusAsync(OpenBox, FocusState.Programmatic);
+        //};
+        Loaded += (s, e) => OpenBox.Focus(FocusState.Keyboard);
+
     }
 
     private async void OpenBoxQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

@@ -12,10 +12,11 @@
                 <ResourceDictionary Source="/Styles/Thickness.xaml" />
                 <ResourceDictionary Source="/Styles/TextBlock.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <winuiconv:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <winuiconv:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
             <winuiconv:StringFormatConverter x:Key="StringFormatConverter"/>
+            <winuiconv:BoolNegationConverter x:Key="BoolNegationConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

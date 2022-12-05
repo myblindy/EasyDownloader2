@@ -1,15 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Helpers;
-using ED2.ViewModels;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-
-using Windows.System;
-
-namespace ED2.Views;
+﻿namespace ED2.Views;
 
 public sealed partial class ShellPage : Page
 {
@@ -28,7 +17,6 @@ public sealed partial class ShellPage : Page
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
-        AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

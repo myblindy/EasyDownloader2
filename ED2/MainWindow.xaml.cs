@@ -1,6 +1,4 @@
-﻿using ED2.Helpers;
-
-namespace ED2;
+﻿namespace ED2;
 
 public sealed partial class MainWindow : WindowEx
 {

@@ -1,12 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-using Microsoft.UI;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
-
-using Windows.UI;
-
-namespace ED2.Helpers;
+﻿namespace ED2.Helpers;
 
 // Helper class to workaround custom title bar bugs.
 // DISCLAIMER: The resource key names and color values used below are subject to change. Do not depend on them.

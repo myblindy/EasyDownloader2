@@ -1,7 +1,3 @@
-using ED2.ViewModels;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
 namespace ED2.Views;
 
 public sealed partial class OAuthDialog : ContentDialog

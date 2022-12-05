@@ -15,7 +15,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <AutoSuggestBox Grid.Row="1" Header="Open Images" QueryIcon="Find" Margin="30"
+            <AutoSuggestBox x:Name="OpenBox" Grid.Row="1" Header="Open Images" QueryIcon="Find" Margin="30"
                             QuerySubmitted="OpenBoxQuerySubmitted"
                             TextChanged="OpenBoxTextChanged"
                             SuggestionChosen="OpenBoxSuggestionChosen"/>

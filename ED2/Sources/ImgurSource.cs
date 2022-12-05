@@ -1,16 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Models;
-using Microsoft.UI.Dispatching;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace ED2.Sources;
+﻿namespace ED2.Sources;
 
 partial class ImgurSource : BaseSource
 {

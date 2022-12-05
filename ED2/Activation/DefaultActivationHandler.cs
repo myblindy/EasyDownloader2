@@ -1,10 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Services;
-using ED2.ViewModels;
-
-using Microsoft.UI.Xaml;
-
-namespace ED2.Activation;
+﻿namespace ED2.Activation;
 
 public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {

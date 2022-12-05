@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-
-namespace ED2.Contracts.Services;
+﻿namespace ED2.Contracts.Services;
 
 public interface IThemeSelectorService
 {

@@ -1,19 +1,4 @@
-﻿using ED2.Activation;
-using ED2.Contracts.Services;
-using ED2.Core.Contracts.Services;
-using ED2.Core.Services;
-using ED2.Helpers;
-using ED2.Models;
-using ED2.Services;
-using ED2.Sources;
-using ED2.ViewModels;
-using ED2.Views;
-
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
-
-namespace ED2;
+﻿namespace ED2;
 
 public partial class App : Application
 {

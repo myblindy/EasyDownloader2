@@ -1,13 +1,5 @@
-﻿using ED2.Contracts.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tweetinvi;
+﻿using Tweetinvi;
 using Tweetinvi.Auth;
-using Tweetinvi.Client;
-using Tweetinvi.Client.V2;
 using Tweetinvi.Parameters;
 
 namespace ED2.Services;

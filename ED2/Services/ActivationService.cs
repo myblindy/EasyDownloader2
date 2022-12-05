@@ -1,11 +1,4 @@
-﻿using ED2.Activation;
-using ED2.Contracts.Services;
-using ED2.Views;
-
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-
-namespace ED2.Services;
+﻿namespace ED2.Services;
 
 public class ActivationService : IActivationService
 {

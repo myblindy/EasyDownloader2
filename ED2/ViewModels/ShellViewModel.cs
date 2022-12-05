@@ -1,14 +1,4 @@
-﻿using System.Windows.Input;
-
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-using ED2.Contracts.Services;
-using ED2.Helpers;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Navigation;
-
-namespace ED2.ViewModels;
+﻿namespace ED2.ViewModels;
 
 public partial class ShellViewModel : ObservableRecipient
 {

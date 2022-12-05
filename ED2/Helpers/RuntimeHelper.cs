@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using System.Text;
-
-namespace ED2.Helpers;
+﻿namespace ED2.Helpers;
 
 public class RuntimeHelper
 {

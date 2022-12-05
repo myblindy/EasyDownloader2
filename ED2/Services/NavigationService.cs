@@ -1,13 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-using ED2.Contracts.Services;
-using ED2.Contracts.ViewModels;
-using ED2.Helpers;
-
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-
-namespace ED2.Services;
+﻿namespace ED2.Services;
 
 // For more information on navigation between pages see
 // https://github.com/microsoft/TemplateStudio/blob/main/docs/WinUI/navigation.md

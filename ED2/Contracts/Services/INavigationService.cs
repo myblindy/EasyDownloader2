@@ -1,7 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-
-namespace ED2.Contracts.Services;
+﻿namespace ED2.Contracts.Services;
 
 public interface INavigationService
 {

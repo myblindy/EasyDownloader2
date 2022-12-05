@@ -1,17 +1,5 @@
-﻿using ED2.Contracts.Services;
-using ED2.Models;
-using Microsoft.UI.Dispatching;
-using Reddit;
+﻿using Reddit;
 using Reddit.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Tweetinvi.Models;
 
 namespace ED2.Sources;
 

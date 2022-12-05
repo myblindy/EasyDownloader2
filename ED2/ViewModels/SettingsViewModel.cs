@@ -1,17 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-
-using ED2.Contracts.Services;
-using ED2.Helpers;
-
-using Microsoft.UI.Xaml;
-
-using Windows.ApplicationModel;
-using Windows.Storage.Pickers;
+﻿using Windows.Storage.Pickers;
 
 namespace ED2.ViewModels;
 

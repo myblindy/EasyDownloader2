@@ -1,9 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Models;
-using Microsoft.UI.Dispatching;
-using System.Diagnostics.CodeAnalysis;
-
-namespace ED2.Sources;
+﻿namespace ED2.Sources;
 
 abstract class BaseSource
 {

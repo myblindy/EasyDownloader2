@@ -1,13 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Core.Contracts.Services;
-using ED2.Core.Helpers;
-using ED2.Helpers;
-using ED2.Models;
-using LiteDB;
-using Microsoft.Extensions.Options;
-using System.Collections;
-using Windows.ApplicationModel;
-using Windows.Storage;
+﻿using LiteDB;
 
 namespace ED2.Services;
 

@@ -1,15 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using ED2.Contracts.Services;
-using ED2.Helpers;
-using ED2.Sources;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Graphics.Imaging;
-
-namespace ED2.Models;
+﻿namespace ED2.Models;
 
 public enum ImageQuality
 {

@@ -1,6 +1,4 @@
-﻿using Microsoft.Windows.ApplicationModel.Resources;
-
-namespace ED2.Helpers;
+﻿namespace ED2.Helpers;
 
 public static class ResourceExtensions
 {

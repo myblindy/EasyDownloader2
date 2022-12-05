@@ -1,10 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Models;
-using Microsoft.UI.Dispatching;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
-
-namespace ED2.Sources;
+﻿namespace ED2.Sources;
 
 partial class DirectImageSource : BaseSource
 {

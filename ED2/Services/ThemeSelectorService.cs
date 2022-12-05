@@ -1,9 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Helpers;
-
-using Microsoft.UI.Xaml;
-
-namespace ED2.Services;
+﻿namespace ED2.Services;
 
 public class ThemeSelectorService : IThemeSelectorService
 {

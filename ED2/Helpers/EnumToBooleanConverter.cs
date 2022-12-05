@@ -1,7 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Data;
-
-namespace ED2.Helpers;
+﻿namespace ED2.Helpers;
 
 public class EnumToBooleanConverter : IValueConverter
 {

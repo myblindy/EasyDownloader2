@@ -1,9 +1,4 @@
-﻿using ED2.Contracts.Services;
-using ED2.Models;
-using Microsoft.UI.Dispatching;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
-using Tweetinvi;
+﻿using Tweetinvi;
 using Tweetinvi.Models;
 
 namespace ED2.Sources;
