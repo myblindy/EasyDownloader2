@@ -101,7 +101,7 @@ public class LocalSettingsService : ILocalSettingsService
 
     public IList<Uri> GetSuggestions(string partial) =>
         db.GetCollection<GeneralDbSettings>().FindAll().FirstOrDefault()?.RecentlyUsedUris?
-            .Where(w => w.ToString().Contains(partial)).ToList() ?? (IList<Uri>)Array.Empty<Uri>();
+            .Where(w => w.ToString().Contains(partial, StringComparison.InvariantCultureIgnoreCase)).ToList() ?? (IList<Uri>)Array.Empty<Uri>();
 
     public void AddSuggestion(Uri suggestion)
     {

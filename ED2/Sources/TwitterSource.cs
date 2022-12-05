@@ -1,15 +1,9 @@
 ﻿using ED2.Contracts.Services;
 using ED2.Models;
 using Microsoft.UI.Dispatching;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Tweetinvi;
-using Tweetinvi.Core.Models;
 using Tweetinvi.Models;
 
 namespace ED2.Sources;
@@ -39,7 +33,7 @@ partial class TwitterSource : BaseSource
         return false;
     }
 
-    public override async Task Load(Uri uri, DispatcherQueue mainDispatcherQueue)
+    public override async Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         if (userTwitterClient is null)
         {
@@ -60,20 +54,21 @@ partial class TwitterSource : BaseSource
 
             foreach (var item in page)
                 foreach (var mediaEntry in item.Media)
-                {
-                    var size = mediaEntry.Sizes.MaxBy(s => s.Value.Width * s.Value.Height);
-                    var link = new Uri($"{mediaEntry.MediaURLHttps}:orig");
-                    yield return new TwitterImageDetails()
+                    if (mediaEntry.MediaType == "photo")
                     {
-                        Tweet = item,
-                        Completed = localSettingsService.IsImageCompleted(link),
-                        OriginalWidth = size.Value.Width!.Value,
-                        OriginalHeight = size.Value.Height!.Value,
-                        DatePosted = item.CreatedAt.DateTime,
-                        Link = link,
-                        Title = item.Text
-                    };
-                }
+                        var size = mediaEntry.Sizes.MaxBy(s => s.Value.Width * s.Value.Height);
+                        var link = new Uri($"{mediaEntry.MediaURLHttps}:orig");
+                        yield return new TwitterImageDetails()
+                        {
+                            Tweet = item,
+                            Completed = localSettingsService.IsImageCompleted(link),
+                            OriginalWidth = size.Value.Width!.Value,
+                            OriginalHeight = size.Value.Height!.Value,
+                            DatePosted = item.CreatedAt.DateTime,
+                            Link = link,
+                            Title = item.Text
+                        };
+                    }
         }
     }
 
@@ -83,11 +78,11 @@ partial class TwitterSource : BaseSource
             await tweet.FavoriteAsync();
     }
 
-    [GeneratedRegex("^(?:https?:\\/\\/)?(?:mobile\\.)?(twitter\\.com\\/([^/?]+))")]
+    [GeneratedRegex(@"^(?:https?:\/\/)?(?:mobile\.)?(twitter\.com\/([^/?]+))")]
     private static partial Regex UriRegex();
 }
 
 class TwitterImageDetails : ImageDetails
 {
-    public ITweet? Tweet { get; set; }
+    public required ITweet Tweet { get; init; }
 }

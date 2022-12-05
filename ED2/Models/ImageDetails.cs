@@ -1,20 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using ED2.Contracts.Services;
 using ED2.Helpers;
-using ED2.Services;
 using ED2.Sources;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
-using Windows.UI.Core;
 
 namespace ED2.Models;
 
@@ -40,12 +33,12 @@ public partial class ImageDetails : ObservableRecipient
     [NotifyPropertyChangedFor(nameof(ScaledHeight))]
     int originalHeight;
 
-    public int ScaledWidth => (int)(OriginalWidth * BaseSource.ScalingFactor);
-    public int ScaledHeight => (int)(OriginalHeight * BaseSource.ScalingFactor);
+    public int ScaledWidth => Math.Max(1, (int)(OriginalWidth * BaseSource.ScalingFactor));
+    public int ScaledHeight => Math.Max(1, (int)(OriginalHeight * BaseSource.ScalingFactor));
 
-    public bool IsVertical => (double)OriginalWidth / OriginalHeight <= .8;
-    public bool IsHorizontal => (double)OriginalWidth / OriginalHeight >= 1.2;
-    public bool IsSquare => !IsVertical && !IsHorizontal;
+    public bool IsVertical => OriginalHeight > 0 && (double)OriginalWidth / OriginalHeight <= .8;
+    public bool IsHorizontal => OriginalHeight > 0 && (double)OriginalWidth / OriginalHeight >= 1.2;
+    public bool IsSquare => OriginalHeight > 0 && !IsVertical && !IsHorizontal;
 
     [ObservableProperty]
     Uri? link;
@@ -68,8 +61,6 @@ public partial class ImageDetails : ObservableRecipient
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ImageSource))]
     bool loading, loaded;
-
-    static readonly ImageSource LoadingImageSource = new BitmapImage(new Uri("ms-appx:///Assets/loading.png"));
 
     ImageSource? imageSource;
     public ImageSource? ImageSource
@@ -95,7 +86,8 @@ public partial class ImageDetails : ObservableRecipient
 
                     using var inputStream = tempStream.AsRandomAccessStream();
                     var decoder = await BitmapDecoder.CreateAsync(inputStream);
-                    var (scaledWidth, scaledHeight) = ((uint)(decoder.PixelWidth * BaseSource.ScalingFactor), (uint)(decoder.PixelHeight * BaseSource.ScalingFactor));
+                    var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                    var (scaledWidth, scaledHeight) = ((uint)(originalWidth * BaseSource.ScalingFactor), (uint)(originalHeight * BaseSource.ScalingFactor));
 
                     inputStream.Seek(0);
                     var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
@@ -111,6 +103,7 @@ public partial class ImageDetails : ObservableRecipient
                         var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
                         sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
 
+                        (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight);
                         ImageSource = output;
                         Loading = false;
                         Loaded = true;

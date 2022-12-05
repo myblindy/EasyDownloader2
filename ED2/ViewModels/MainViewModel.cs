@@ -20,6 +20,7 @@ public partial class MainViewModel : ObservableRecipient
     {
         this.dialogService = dialogService;
         LocalSettingsService = localSettingsService;
+
         var minSizeQuality = typeof(ImageQuality).GetFields()
             .Where(f => f.IsLiteral)
             .GroupBy(f => (ImageQuality)f.GetValue(null)!)
@@ -27,12 +28,15 @@ public partial class MainViewModel : ObservableRecipient
         ImageQualities = minSizeQuality.Keys.ToArray();
 
         Images.ObserveFilterProperty(nameof(ImageDetails.Completed));
+        Images.ObserveFilterProperty(nameof(ImageDetails.ScaledWidth));
+        Images.ObserveFilterProperty(nameof(ImageDetails.ScaledHeight));
         Images.Filter = _image => _image is ImageDetails imageDetails
-            && !imageDetails.Completed
-            && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minSizeQuality[RequestedImageQuality]
-            && (!imageDetails.IsHorizontal || ShowHorizontal && imageDetails.IsHorizontal)
-            && (!imageDetails.IsVertical || ShowVertical && imageDetails.IsVertical)
-            && (!imageDetails.IsSquare || ShowSquare && imageDetails.IsSquare);
+            && (((imageDetails.OriginalWidth, imageDetails.OriginalHeight) == (0, 0)) ||
+                (!imageDetails.Completed
+                && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minSizeQuality[RequestedImageQuality]
+                && (!imageDetails.IsHorizontal || ShowHorizontal && imageDetails.IsHorizontal)
+                && (!imageDetails.IsVertical || ShowVertical && imageDetails.IsVertical)
+                && (!imageDetails.IsSquare || ShowSquare && imageDetails.IsSquare)));
 
         Task.WhenAll(
             localSettingsService.ReadSettingAsync(nameof(ShowHorizontal), true),
@@ -73,9 +77,9 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     string? horizontalSaveFolder, verticalSaveFolder, squareSaveFolder;
 
-    partial void OnHorizontalSaveFolderChanged(string value) => LocalSettingsService.SaveSettingAsync(nameof(HorizontalSaveFolder), value);
-    partial void OnVerticalSaveFolderChanged(string value) => LocalSettingsService.SaveSettingAsync(nameof(VerticalSaveFolder), value);
-    partial void OnSquareSaveFolderChanged(string value) => LocalSettingsService.SaveSettingAsync(nameof(SquareSaveFolder), value);
+    partial void OnHorizontalSaveFolderChanged(string? value) => LocalSettingsService.SaveSettingAsync(nameof(HorizontalSaveFolder), value);
+    partial void OnVerticalSaveFolderChanged(string? value) => LocalSettingsService.SaveSettingAsync(nameof(VerticalSaveFolder), value);
+    partial void OnSquareSaveFolderChanged(string? value) => LocalSettingsService.SaveSettingAsync(nameof(SquareSaveFolder), value);
 
     [ObservableProperty]
     bool isOpening = true;
@@ -86,10 +90,6 @@ public partial class MainViewModel : ObservableRecipient
 
     public AdvancedCollectionView Images { get; } = new(new ObservableCollection<ImageDetails>(), true);
 
-    static readonly BaseSource[] Sources = new BaseSource[]
-    {
-        App.GetService<TwitterSource>()
-    };
     CancellationTokenSource cancellationTokenSource = new();
     IAsyncEnumerator<ImageDetails>? currentSourceEnumerator;
     BaseSource? currentSource;
@@ -101,7 +101,15 @@ public partial class MainViewModel : ObservableRecipient
         CurrentUri = uri;
         IsOpening = false;
 
-        foreach (var source in Sources)
+        foreach (var source in new BaseSource[]
+        {
+            App.GetService<DirectImageSource>(),
+            App.GetService<TwitterSource>(),
+            App.GetService<RedditSource>(),
+            App.GetService<ImgurSource>(),
+            App.GetService<RedditGallerySource>(),
+        })
+        {
             if (source.CanHandle(uri, out var normalizedUri, out var currentPrefix))
             {
                 CurrentNormalizedUri = normalizedUri;
@@ -117,6 +125,7 @@ public partial class MainViewModel : ObservableRecipient
 
                 return;
             }
+        }
 
         CurrentNormalizedUri = null;
         await dialogService.ShowErrorAsync("Unable to find a loader for the given URI.");
@@ -150,7 +159,7 @@ public partial class MainViewModel : ObservableRecipient
 
         if (image.Link.IsFile)
             throw new NotImplementedException();
-        var extension = Regex.Match(image.Link.LocalPath, @"/[^/:]+?(?:\.([^:]+?))(?::.*?)?$") is { Success: true } m ? m.Groups[1].Value
+        var extension = SavePathRegex().Match(image.Link.LocalPath) is { Success: true } m ? m.Groups[1].Value
             : throw new NotImplementedException();
         var localFileName = Path.Combine(path, $"{(currentPrefix is null ? null : $"{currentPrefix}-")}{Guid.NewGuid()}-{Guid.NewGuid()}.{extension}");
 
@@ -172,4 +181,7 @@ public partial class MainViewModel : ObservableRecipient
         foreach (ImageDetails image in Images.ToList())
             image.Completed = true;
     }
+
+    [GeneratedRegex("/[^/:]+?(?:\\.([^:]+?))(?::.*?)?$")]
+    private static partial Regex SavePathRegex();
 }

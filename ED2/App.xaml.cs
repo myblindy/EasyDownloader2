@@ -64,6 +64,7 @@ public partial class App : Application
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<IDialogService, DialogService>();
                 services.AddSingleton<ITwitterService, TwitterService>();
+                services.AddSingleton<IRedditService, RedditService>();
 
                 // Core Services
                 services.AddSingleton<IFileService, FileService>();
@@ -77,7 +78,11 @@ public partial class App : Application
                 services.AddSingleton<ShellPage>();
 
                 // Sources
-                services.AddSingleton<TwitterSource>();
+                services.AddTransient<TwitterSource>();
+                services.AddTransient<RedditSource>();
+                services.AddTransient<DirectImageSource>();
+                services.AddTransient<ImgurSource>();
+                services.AddTransient<RedditGallerySource>();
 
                 // Configuration
                 services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
