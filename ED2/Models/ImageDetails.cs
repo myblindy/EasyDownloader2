@@ -22,8 +22,8 @@ public partial class ImageDetails : ObservableRecipient
     [NotifyPropertyChangedFor(nameof(ScaledHeight))]
     int originalHeight;
 
-    public int ScaledWidth => (int)Math.Round(OriginalWidth * BaseSource.ScalingFactor);
-    public int ScaledHeight => (int)Math.Round(OriginalHeight * BaseSource.ScalingFactor);
+    public int ScaledWidth => BaseSource.GetScaledSize(OriginalWidth, OriginalHeight).scaledWidth;
+    public int ScaledHeight => BaseSource.GetScaledSize(OriginalHeight, OriginalHeight).scaledHeight;
 
     public bool IsVertical => (double)OriginalWidth / OriginalHeight <= .8;
     public bool IsHorizontal => (double)OriginalWidth / OriginalHeight >= 1.2;
@@ -34,6 +34,8 @@ public partial class ImageDetails : ObservableRecipient
 
     partial void OnLinkChanged(Uri? value)
     {
+        if (value is null) return;
+
         var dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _ = Task.Run(async () =>
         {
@@ -46,14 +48,14 @@ public partial class ImageDetails : ObservableRecipient
             using var inputStream = tempStream.AsRandomAccessStream();
             var decoder = await BitmapDecoder.CreateAsync(inputStream);
             var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
-            var (scaledWidth, scaledHeight) = ((uint)(originalWidth * BaseSource.ScalingFactor), (uint)(originalHeight * BaseSource.ScalingFactor));
+            var (scaledWidth, scaledHeight) = BaseSource.GetScaledSize(originalWidth, originalHeight);
 
             inputStream.Seek(0);
             var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
                 new BitmapTransform
                 {
-                    ScaledWidth = scaledWidth,
-                    ScaledHeight = scaledHeight,
+                    ScaledWidth = (uint)scaledWidth,
+                    ScaledHeight = (uint)scaledHeight,
                 }, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
             var sourceDecodedPixels = pixelData.DetachPixelData();
 

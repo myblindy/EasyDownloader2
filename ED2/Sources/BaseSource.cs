@@ -8,7 +8,18 @@ abstract class BaseSource
         this.localSettingsService = localSettingsService;
     }
 
-    public const double ScalingFactor = 1 / 3d;
+    public static (int scaledWidth, int scaledHeight) GetScaledSize(int width, int height)
+    {
+        const int maxScaledSize = 800;
+        const double scaleFactor = 1 / 3d;
+
+        if (width < maxScaledSize / scaleFactor && height < maxScaledSize / scaleFactor)
+            return ((int)Math.Round(width * scaleFactor), (int)Math.Round(height * scaleFactor));
+
+        return width > height
+            ? (maxScaledSize, (int)((double)maxScaledSize / width * height))
+            : ((int)((double)maxScaledSize / height * width), maxScaledSize);
+    }
 
     public abstract bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix);
     public abstract Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null);

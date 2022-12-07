@@ -77,7 +77,7 @@ public partial class MainViewModel : ObservableRecipient
     Uri? currentUri, currentNormalizedUri;
     string? currentPrefix;
 
-    public AdvancedCollectionView Images { get; } = new(new ObservableCollection<ImageDetails>(), true);
+    public MB.CommunityToolkit.WinUI.UI.AdvancedCollectionView Images { get; } = new(new ObservableCollection<ImageDetails>(), true);
 
     CancellationTokenSource cancellationTokenSource = new();
     IAsyncEnumerator<ImageDetails>? currentSourceEnumerator;
