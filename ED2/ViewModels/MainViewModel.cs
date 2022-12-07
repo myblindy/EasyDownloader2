@@ -16,15 +16,16 @@ public partial class MainViewModel : ObservableRecipient
         ImageQualities = minSizeQuality.Keys.ToArray();
 
         Images.ObserveFilterProperty(nameof(ImageDetails.Completed));
-        Images.ObserveFilterProperty(nameof(ImageDetails.ScaledWidth));
-        Images.ObserveFilterProperty(nameof(ImageDetails.ScaledHeight));
+        Images.ObserveFilterProperty(nameof(ImageDetails.OriginalWidth));
+        Images.ObserveFilterProperty(nameof(ImageDetails.OriginalHeight));
+
         Images.Filter = _image => _image is ImageDetails imageDetails
-            && (((imageDetails.OriginalWidth, imageDetails.OriginalHeight) == (0, 0)) ||
-                (!imageDetails.Completed
-                && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minSizeQuality[RequestedImageQuality]
-                && (!imageDetails.IsHorizontal || ShowHorizontal && imageDetails.IsHorizontal)
-                && (!imageDetails.IsVertical || ShowVertical && imageDetails.IsVertical)
-                && (!imageDetails.IsSquare || ShowSquare && imageDetails.IsSquare)));
+            && imageDetails.OriginalWidth > 0 && imageDetails.OriginalHeight > 0
+            && !imageDetails.Completed
+            && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minSizeQuality[RequestedImageQuality]
+            && (!imageDetails.IsHorizontal || ShowHorizontal && imageDetails.IsHorizontal)
+            && (!imageDetails.IsVertical || ShowVertical && imageDetails.IsVertical)
+            && (!imageDetails.IsSquare || ShowSquare && imageDetails.IsSquare);
 
         Task.WhenAll(
             localSettingsService.ReadSettingAsync(nameof(ShowHorizontal), true),

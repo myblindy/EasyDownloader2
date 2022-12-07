@@ -31,6 +31,10 @@ public partial class App : Application
     {
         InitializeComponent();
 
+        //DebugSettings.IsTextPerformanceVisualizationEnabled = true;
+        //DebugSettings.EnableFrameRateCounter = true;
+        //DebugSettings.FailFastOnErrors = true;
+
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
             .UseContentRoot(AppContext.BaseDirectory)

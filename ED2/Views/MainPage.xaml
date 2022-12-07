@@ -24,6 +24,8 @@
         <ScrollViewer Visibility="{x:Bind ViewModel.IsOpening, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}">
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.Images}">
                 <ItemsRepeater.Layout>
+                    <!--<UniformGridLayout MinColumnSpacing="5" MinRowSpacing="5" MinItemHeight="400" MinItemWidth="400" />-->
+                    <!--<controls:StaggeredLayout ColumnSpacing="5" RowSpacing="5" DesiredColumnWidth="400" />-->
                     <controls:WrapLayout HorizontalSpacing="10" VerticalSpacing="10" />
                 </ItemsRepeater.Layout>
                 <DataTemplate x:DataType="models:ImageDetails">
@@ -44,12 +46,12 @@
                                Source="{x:Bind ImageSource, TargetNullValue={x:Null}, Mode=OneWay}"
                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-                        <ProgressRing Grid.RowSpan="2" Grid.ColumnSpan="2" IsActive="{x:Bind Loading, Mode=OneWay}"/>
+                        <ProgressRing Grid.RowSpan="2" Grid.ColumnSpan="2" IsActive="{x:Bind Loaded, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"/>
 
                         <Border Opacity=".3" Background="Black"/>
-                        <TextBlock MaxWidth="{x:Bind ScaledWidth}" FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords">
-                            <Run Text="{x:Bind OriginalWidth, Mode=OneWay}"/><Run Text="x"/><Run Text="{x:Bind OriginalHeight, Mode=OneWay}"/><Run Text=" "/><Run Text="{x:Bind DatePosted, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}"/><LineBreak/>
-                            <Run Text="{x:Bind Title}"/>
+                        <TextBlock MaxWidth="{x:Bind ScaledWidth, Mode=OneWay}" FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords">
+                            <Run Text="{x:Bind OriginalWidth, Mode=OneWay}"/><Run Text="x"/><Run Text="{x:Bind OriginalHeight, Mode=OneWay}"/><Run Text=" "/><Run Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}"/><LineBreak/>
+                            <Run Text="{x:Bind Title, TargetNullValue=N/A, Mode=OneWay}"/>
                         </TextBlock>
                     </Grid>
                 </DataTemplate>

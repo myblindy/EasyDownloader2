@@ -2,7 +2,7 @@
 
 public enum ImageQuality
 {
-    [Value<int>(0)]
+    [Value<int>(1)]
     Any,
     [Value<int>(1279 * 719)]
     SD,
@@ -22,15 +22,52 @@ public partial class ImageDetails : ObservableRecipient
     [NotifyPropertyChangedFor(nameof(ScaledHeight))]
     int originalHeight;
 
-    public int ScaledWidth => Math.Max(1, (int)(OriginalWidth * BaseSource.ScalingFactor));
-    public int ScaledHeight => Math.Max(1, (int)(OriginalHeight * BaseSource.ScalingFactor));
+    public int ScaledWidth => (int)Math.Round(OriginalWidth * BaseSource.ScalingFactor);
+    public int ScaledHeight => (int)Math.Round(OriginalHeight * BaseSource.ScalingFactor);
 
-    public bool IsVertical => OriginalHeight > 0 && (double)OriginalWidth / OriginalHeight <= .8;
-    public bool IsHorizontal => OriginalHeight > 0 && (double)OriginalWidth / OriginalHeight >= 1.2;
-    public bool IsSquare => OriginalHeight > 0 && !IsVertical && !IsHorizontal;
+    public bool IsVertical => (double)OriginalWidth / OriginalHeight <= .8;
+    public bool IsHorizontal => (double)OriginalWidth / OriginalHeight >= 1.2;
+    public bool IsSquare => !IsVertical && !IsHorizontal;
 
     [ObservableProperty]
     Uri? link;
+
+    partial void OnLinkChanged(Uri? value)
+    {
+        var dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        _ = Task.Run(async () =>
+        {
+            var rawBytes = await App.HttpClient.GetByteArrayAsync(value);
+
+            using var tempStream = new MemoryStream();
+            tempStream.Write(rawBytes);
+            tempStream.Position = 0;
+
+            using var inputStream = tempStream.AsRandomAccessStream();
+            var decoder = await BitmapDecoder.CreateAsync(inputStream);
+            var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+            var (scaledWidth, scaledHeight) = ((uint)(originalWidth * BaseSource.ScalingFactor), (uint)(originalHeight * BaseSource.ScalingFactor));
+
+            inputStream.Seek(0);
+            var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
+                new BitmapTransform
+                {
+                    ScaledWidth = scaledWidth,
+                    ScaledHeight = scaledHeight,
+                }, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
+            var sourceDecodedPixels = pixelData.DetachPixelData();
+
+            dispatcherQueue.TryEnqueue(() =>
+            {
+                var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
+                sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
+
+                (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight);
+                ImageSource = output;
+                Loaded = true;
+            });
+        });
+    }
 
     [ObservableProperty]
     string? title;
@@ -49,59 +86,8 @@ public partial class ImageDetails : ObservableRecipient
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ImageSource))]
-    bool loading, loaded;
+    bool loaded;
 
+    [ObservableProperty]
     ImageSource? imageSource;
-    public ImageSource? ImageSource
-    {
-        get
-        {
-            if (imageSource is not null && Loaded)
-                return imageSource;
-
-            if (!Loading && !Loaded)
-            {
-                Loading = true;
-
-                // load code
-                var dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-                _ = Task.Run(async () =>
-                {
-                    var rawBytes = await App.HttpClient.GetByteArrayAsync(Link);
-
-                    using var tempStream = new MemoryStream();
-                    tempStream.Write(rawBytes);
-                    tempStream.Position = 0;
-
-                    using var inputStream = tempStream.AsRandomAccessStream();
-                    var decoder = await BitmapDecoder.CreateAsync(inputStream);
-                    var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
-                    var (scaledWidth, scaledHeight) = ((uint)(originalWidth * BaseSource.ScalingFactor), (uint)(originalHeight * BaseSource.ScalingFactor));
-
-                    inputStream.Seek(0);
-                    var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
-                        new BitmapTransform
-                        {
-                            ScaledWidth = scaledWidth,
-                            ScaledHeight = scaledHeight,
-                        }, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
-                    var sourceDecodedPixels = pixelData.DetachPixelData();
-
-                    dispatcherQueue.TryEnqueue(() =>
-                    {
-                        var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
-                        sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
-
-                        (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight);
-                        ImageSource = output;
-                        Loading = false;
-                        Loaded = true;
-                    });
-                });
-            }
-
-            return null;
-        }
-        set => SetProperty(ref imageSource, value);
-    }
 }
