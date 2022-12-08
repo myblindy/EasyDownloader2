@@ -24,8 +24,6 @@
         <ScrollViewer Visibility="{x:Bind ViewModel.IsOpening, Converter={StaticResource InverseBoolToVisibilityConverter}, Mode=OneWay}">
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.Images}">
                 <ItemsRepeater.Layout>
-                    <!--<UniformGridLayout MinColumnSpacing="5" MinRowSpacing="5" MinItemHeight="400" MinItemWidth="400" />-->
-                    <!--<controls:StaggeredLayout ColumnSpacing="5" RowSpacing="5" DesiredColumnWidth="400" />-->
                     <controls:WrapLayout HorizontalSpacing="10" VerticalSpacing="10" />
                 </ItemsRepeater.Layout>
                 <DataTemplate x:DataType="models:ImageDetails">

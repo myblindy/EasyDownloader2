@@ -83,8 +83,12 @@ public partial class MainViewModel : ObservableRecipient
     IAsyncEnumerator<ImageDetails>? currentSourceEnumerator;
     BaseSource? currentSource;
 
-    [RelayCommand]
-    async Task Open(Uri uri)
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(OpenCommand), nameof(LoadNextPageCommand), nameof(CompleteAllImagesCommand), nameof(CompleteAllImagesAndLoadNextPageCommand))]
+    bool loadingIsDone = true;
+
+    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    async Task OpenAsync(Uri uri)
     {
         Images.Clear();
         CurrentUri = uri;
@@ -108,9 +112,16 @@ public partial class MainViewModel : ObservableRecipient
                 cancellationTokenSource = new();
 
                 currentSource = source;
-                await source.Load(uri, DispatcherQueue.GetForCurrentThread());
+
+                try
+                {
+                    LoadingIsDone = false;
+                    await source.LoadAsync(uri, DispatcherQueue.GetForCurrentThread());
+                }
+                finally { LoadingIsDone = true; }
+
                 currentSourceEnumerator = source.EnumerateImageDetails().GetAsyncEnumerator(cancellationTokenSource.Token);
-                await LoadNextPage();
+                await LoadNextPageAsync();
 
                 return;
             }
@@ -120,20 +131,40 @@ public partial class MainViewModel : ObservableRecipient
         await dialogService.ShowErrorAsync("Unable to find a loader for the given URI.");
     }
 
-    [RelayCommand]
-    async Task LoadNextPage()
+    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    async Task LoadNextPageAsync()
     {
-        const int MaxImagesPerPage = 50;
-        Images.Clear();
+        try
+        {
+            LoadingIsDone = false;
 
-        var ct = cancellationTokenSource.Token;
+            const int MaxImagesPerPage = 50;
+            Images.Clear();
 
-        if (currentSourceEnumerator is not null)
-            for (int i = 0; i < MaxImagesPerPage; ++i)
-                if (ct.IsCancellationRequested || !await currentSourceEnumerator.MoveNextAsync())
-                    break;
-                else
-                    Images.Add(currentSourceEnumerator.Current);
+            var ct = cancellationTokenSource.Token;
+
+            if (currentSourceEnumerator is not null)
+                for (int i = 0; i < MaxImagesPerPage; ++i)
+                    if (ct.IsCancellationRequested || !await currentSourceEnumerator.MoveNextAsync())
+                        break;
+                    else
+                        Images.Add(currentSourceEnumerator.Current);
+        }
+        finally { LoadingIsDone = true; }
+    }
+
+    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    void CompleteAllImages()
+    {
+        foreach (ImageDetails image in Images.ToList())
+            image.Completed = true;
+    }
+
+    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    async Task CompleteAllImagesAndLoadNextPageAsync()
+    {
+        CompleteAllImages();
+        await LoadNextPageAsync();
     }
 
     [RelayCommand]
@@ -162,13 +193,6 @@ public partial class MainViewModel : ObservableRecipient
         }
 
         await Task.WhenAll(download(), currentSource is null ? Task.CompletedTask : currentSource.OnSaveImage(image));
-    }
-
-    [RelayCommand]
-    void CompleteAllImages()
-    {
-        foreach (ImageDetails image in Images.ToList())
-            image.Completed = true;
     }
 
     [GeneratedRegex("/[^/:]+?(?:\\.([^:]+?))(?::.*?)?$")]

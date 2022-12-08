@@ -15,7 +15,7 @@ partial class DirectImageSource : BaseSource
 
     Uri? uri;
     Func<ImageDetails>? imageDetailsGenerator;
-    public override Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
+    public override Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         this.uri = uri;
         this.imageDetailsGenerator = imageDetailsGenerator;

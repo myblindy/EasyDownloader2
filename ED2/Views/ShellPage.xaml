@@ -24,8 +24,25 @@
         </Grid>
 
         <CommandBar Grid.Row="1" OverflowButtonVisibility="Collapsed">
-            <AppBarButton Command="{x:Bind ViewModel.MainViewModel.LoadNextPageCommand}">Load Next</AppBarButton>
-            <AppBarButton Command="{x:Bind ViewModel.MainViewModel.CompleteAllImagesCommand}">Complete All</AppBarButton>
+            <AppBarElementContainer>
+                <ProgressRing Visibility="{x:Bind ViewModel.MainViewModel.LoadingIsDone, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+            </AppBarElementContainer>
+            <AppBarElementContainer>
+                <SplitButton Command="{x:Bind ViewModel.MainViewModel.CompleteAllImagesAndLoadNextPageCommand}">
+                    <SplitButton.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="Like" Margin="0,0,5,-3"/>
+                            <TextBlock VerticalAlignment="Bottom">Complete All and Load Next</TextBlock>
+                        </StackPanel>
+                    </SplitButton.Content>
+                    <SplitButton.Flyout>
+                        <MenuFlyout Placement="RightEdgeAlignedBottom">
+                            <MenuFlyoutItem Icon="Accept" Command="{x:Bind ViewModel.MainViewModel.CompleteAllImagesCommand}">Complete All</MenuFlyoutItem>
+                            <MenuFlyoutItem Icon="Next" Command="{x:Bind ViewModel.MainViewModel.LoadNextPageCommand}">Load Next</MenuFlyoutItem>
+                        </MenuFlyout>
+                    </SplitButton.Flyout>
+                </SplitButton>
+            </AppBarElementContainer>
             <AppBarSeparator/>
             <AppBarToggleButton IsChecked="{x:Bind ViewModel.MainViewModel.ShowHorizontal, Mode=TwoWay}">Horizontal</AppBarToggleButton>
             <AppBarToggleButton IsChecked="{x:Bind ViewModel.MainViewModel.ShowVertical, Mode=TwoWay}">Vertical</AppBarToggleButton>

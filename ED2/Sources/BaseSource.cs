@@ -22,7 +22,7 @@ abstract class BaseSource
     }
 
     public abstract bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix);
-    public abstract Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null);
+    public abstract Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null);
     public abstract IAsyncEnumerable<ImageDetails> EnumerateImageDetails();
     public abstract Task OnSaveImage(ImageDetails imageDetails);
 }

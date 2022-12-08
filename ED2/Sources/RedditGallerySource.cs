@@ -25,7 +25,7 @@ partial class RedditGallerySource : BaseSource
         return false;
     }
 
-    public override Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
+    public override Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         this.imageDetailsGenerator = imageDetailsGenerator;
         this.uri = uri;

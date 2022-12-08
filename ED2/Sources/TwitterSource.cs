@@ -28,7 +28,7 @@ partial class TwitterSource : BaseSource
         return false;
     }
 
-    public override async Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
+    public override async Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         if (userTwitterClient is null)
         {

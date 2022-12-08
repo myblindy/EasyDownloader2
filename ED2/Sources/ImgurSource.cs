@@ -23,7 +23,7 @@ partial class ImgurSource : BaseSource
         return false;
     }
 
-    public override Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
+    public override Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         this.imageDetailsGenerator = imageDetailsGenerator;
         albumName = UriRegex().Match(uri.ToString()).Groups[2].Value;
@@ -56,7 +56,7 @@ partial class ImgurSource : BaseSource
                 }
     }
 
-    public override Task OnSaveImage(ImageDetails imageDetails) => throw new NotImplementedException();
+    public override Task OnSaveImage(ImageDetails imageDetails) => Task.CompletedTask;
 
     [GeneratedRegex(@"^(?:https?:\/\/)?(imgur\.com\/(?:a|gallery)\/([a-zA-Z0-9]+))\/?$")]
     private static partial Regex UriRegex();

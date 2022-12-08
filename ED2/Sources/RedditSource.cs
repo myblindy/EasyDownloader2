@@ -29,7 +29,7 @@ partial class RedditSource : BaseSource
         return false;
     }
 
-    public override async Task Load(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
+    public override async Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         if (redditClient is null)
         {
@@ -70,7 +70,7 @@ partial class RedditSource : BaseSource
                     {
                         if (source.CanHandle(new Uri(linkPost.URL), out _, out _))
                         {
-                            await source.Load(new Uri(linkPost.URL), mainDispatcherQueue!, () => new RedditImageDetails
+                            await source.LoadAsync(new Uri(linkPost.URL), mainDispatcherQueue!, () => new RedditImageDetails
                             {
                                 Post = post,
                                 Title = $"{flairPortion}{WebUtility.HtmlDecode(post.Title)}",
