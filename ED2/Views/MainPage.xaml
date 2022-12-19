@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:models="using:ED2.Models" xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:ED2.Models" 
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:help="using:ED2.Helpers"
     mc:Ignorable="d">
 
     <Grid x:Name="ContentArea">
@@ -29,7 +31,7 @@
                 <DataTemplate x:DataType="models:ImageDetails">
                     <Grid DataContext="{x:Bind Mode=OneWay}" PointerPressed="ImagePointerPressed"
                           Visibility="{x:Bind Completed, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                          Width="{x:Bind ScaledWidth, Mode=OneWay}" Height="{x:Bind ScaledHeight, Mode=OneWay}"
+                          MinWidth="{x:Bind ScaledWidth, Mode=OneWay}" MinHeight="{x:Bind ScaledHeight, Mode=OneWay}"
                           x:Name="ImageRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
@@ -41,6 +43,7 @@
                         </Grid.RowDefinitions>
 
                         <Image Grid.RowSpan="2" Grid.ColumnSpan="2"
+                               Width="{x:Bind ScaledWidth, Mode=OneWay}" Height="{x:Bind ScaledHeight, Mode=OneWay}"
                                Source="{x:Bind ImageSource, TargetNullValue={x:Null}, Mode=OneWay}"
                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
@@ -48,8 +51,8 @@
 
                         <Border Opacity=".3" Background="Black"/>
                         <TextBlock MaxWidth="{x:Bind ScaledWidth, Mode=OneWay}" FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords">
-                            <Run Text="{x:Bind OriginalWidth, Mode=OneWay}"/><Run Text="x"/><Run Text="{x:Bind OriginalHeight, Mode=OneWay}"/><Run Text=" "/><Run Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}"/><LineBreak/>
-                            <Run Text="{x:Bind Title, TargetNullValue=N/A, Mode=OneWay}"/>
+                            <Run Text="{x:Bind OriginalWidth, Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="x" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="{x:Bind OriginalHeight, Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text=" "/><Run Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}" Foreground="{ThemeResource TextFillColorTertiary}"/><LineBreak/>
+                            <Run Text="{x:Bind help:ViewHelpers.GetFullFlairText(Flair), Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="{x:Bind Title, Mode=OneWay}"/>
                         </TextBlock>
                     </Grid>
                 </DataTemplate>

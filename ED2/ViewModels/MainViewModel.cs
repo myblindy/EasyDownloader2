@@ -4,16 +4,18 @@ public partial class MainViewModel : ObservableRecipient
 {
     public ILocalSettingsService LocalSettingsService { get; }
     readonly IDialogService dialogService;
+
+    static readonly Dictionary<ImageQuality, int> minimumPixelsPerImageQuality = typeof(ImageQuality).GetFields()
+        .Where(f => f.IsLiteral)
+        .GroupBy(f => (ImageQuality)f.GetValue(null)!)
+        .ToDictionary(w => w.Key, w => w.First().GetCustomAttribute<ValueAttribute<int>>()!.Value);
+
     public MainViewModel(IDialogService dialogService, ILocalSettingsService localSettingsService)
     {
         this.dialogService = dialogService;
         LocalSettingsService = localSettingsService;
 
-        var minSizeQuality = typeof(ImageQuality).GetFields()
-            .Where(f => f.IsLiteral)
-            .GroupBy(f => (ImageQuality)f.GetValue(null)!)
-            .ToDictionary(w => w.Key, w => w.First().GetCustomAttribute<ValueAttribute<int>>()!.Value);
-        ImageQualities = minSizeQuality.Keys.ToArray();
+        ImageQualities = minimumPixelsPerImageQuality.Keys.ToArray();
 
         Images.ObserveFilterProperty(nameof(ImageDetails.Completed));
         Images.ObserveFilterProperty(nameof(ImageDetails.OriginalWidth));
@@ -22,7 +24,7 @@ public partial class MainViewModel : ObservableRecipient
         Images.Filter = _image => _image is ImageDetails imageDetails
             && imageDetails.OriginalWidth > 0 && imageDetails.OriginalHeight > 0
             && !imageDetails.Completed
-            && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minSizeQuality[RequestedImageQuality]
+            && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minimumPixelsPerImageQuality[RequestedImageQuality]
             && (!imageDetails.IsHorizontal || ShowHorizontal && imageDetails.IsHorizontal)
             && (!imageDetails.IsVertical || ShowVertical && imageDetails.IsVertical)
             && (!imageDetails.IsSquare || ShowSquare && imageDetails.IsSquare);
@@ -52,8 +54,15 @@ public partial class MainViewModel : ObservableRecipient
     }
 
     [ObservableProperty]
-    ImageQuality requestedImageQuality = ImageQuality.HD;
-    partial void OnRequestedImageQualityChanged(ImageQuality value) => Images.RefreshFilter();
+    int minimumPixelsRequested;
+
+    [ObservableProperty]
+    ImageQuality requestedImageQuality;
+    partial void OnRequestedImageQualityChanged(ImageQuality value)
+    {
+        Images.RefreshFilter();
+        MinimumPixelsRequested = minimumPixelsPerImageQuality[value];
+    }
 
     public ImageQuality[] ImageQualities { get; }
 

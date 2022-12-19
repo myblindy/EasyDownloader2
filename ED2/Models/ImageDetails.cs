@@ -72,7 +72,7 @@ public partial class ImageDetails : ObservableRecipient
     }
 
     [ObservableProperty]
-    string? title;
+    string? flair, title;
 
     [ObservableProperty]
     DateTime? datePosted;

@@ -57,9 +57,6 @@ partial class RedditSource : BaseSource
 
                     if (post is not LinkPost linkPost || linkPost.URL.StartsWith("/r/")) continue;
 
-                    var flairPortion = string.IsNullOrWhiteSpace(post.Listing.LinkFlairText) ? null
-                        : $"[{WebUtility.HtmlDecode(post.Listing.LinkFlairText).Trim()}] ";
-
                     // figure out if we can find media links in this
                     foreach (var source in new BaseSource[]
                     {
@@ -73,7 +70,8 @@ partial class RedditSource : BaseSource
                             await source.LoadAsync(new Uri(linkPost.URL), mainDispatcherQueue!, () => new RedditImageDetails
                             {
                                 Post = post,
-                                Title = $"{flairPortion}{WebUtility.HtmlDecode(post.Title)}",
+                                Flair = string.IsNullOrWhiteSpace(post.Listing.LinkFlairText) ? null : WebUtility.HtmlDecode(post.Listing.LinkFlairText).Trim(),
+                                Title = WebUtility.HtmlDecode(post.Title),
                                 DatePosted = post.Created
                             });
 
