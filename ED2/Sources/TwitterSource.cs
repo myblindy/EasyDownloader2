@@ -56,7 +56,7 @@ partial class TwitterSource : BaseSource
                         yield return new TwitterImageDetails()
                         {
                             Tweet = item,
-                            Completed = localSettingsService.IsImageCompleted(link),
+                            IsCompleted = localSettingsService.IsImageCompleted(link),
                             OriginalWidth = size.Value.Width!.Value,
                             OriginalHeight = size.Value.Height!.Value,
                             DatePosted = item.CreatedAt.DateTime,

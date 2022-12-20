@@ -30,7 +30,7 @@
                 </ItemsRepeater.Layout>
                 <DataTemplate x:DataType="models:ImageDetails">
                     <Grid DataContext="{x:Bind Mode=OneWay}" PointerPressed="ImagePointerPressed"
-                          Visibility="{x:Bind Completed, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                          Visibility="{x:Bind IsCompleted, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                           MinWidth="{x:Bind ScaledWidth, Mode=OneWay}" MinHeight="{x:Bind ScaledHeight, Mode=OneWay}"
                           x:Name="ImageRoot" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>

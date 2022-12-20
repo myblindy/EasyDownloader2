@@ -34,7 +34,7 @@ public partial class ImageDetails : ObservableRecipient
 
     partial void OnLinkChanged(Uri? value)
     {
-        if (value is null) return;
+        if (value is null || IsCompleted) return;
 
         var dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         _ = Task.Run(async () =>
@@ -78,9 +78,9 @@ public partial class ImageDetails : ObservableRecipient
     DateTime? datePosted;
 
     [ObservableProperty]
-    bool completed;
+    bool isCompleted;
 
-    partial void OnCompletedChanged(bool value)
+    partial void OnIsCompletedChanged(bool value)
     {
         if (value && Link is not null)
             App.GetService<ILocalSettingsService>().SetImageCompleted(Link);

@@ -29,7 +29,7 @@ partial class DirectImageSource : BaseSource
         {
             var result = (imageDetailsGenerator ?? (static () => new ImageDetails()))();
             result.Link = uri;
-            result.Completed = localSettingsService.IsImageCompleted(uri);
+            result.IsCompleted = localSettingsService.IsImageCompleted(uri);
             yield return result;
         }
     }

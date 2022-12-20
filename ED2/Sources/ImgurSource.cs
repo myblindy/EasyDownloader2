@@ -44,7 +44,7 @@ partial class ImgurSource : BaseSource
                     if (Path.GetExtension(link) is ".mp4" or ".gif") continue;     // ignore video links
 
                     var img = (imageDetailsGenerator ?? (() => new ImageDetails()))();
-                    img.Completed = localSettingsService.IsImageCompleted(uri);
+                    img.IsCompleted = localSettingsService.IsImageCompleted(uri);
                     img.Link = uri;
 
                     if (w["width"]?.Value<int>() is { } width)

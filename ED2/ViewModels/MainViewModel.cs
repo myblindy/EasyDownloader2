@@ -17,13 +17,13 @@ public partial class MainViewModel : ObservableRecipient
 
         ImageQualities = minimumPixelsPerImageQuality.Keys.ToArray();
 
-        Images.ObserveFilterProperty(nameof(ImageDetails.Completed));
+        Images.ObserveFilterProperty(nameof(ImageDetails.IsCompleted));
         Images.ObserveFilterProperty(nameof(ImageDetails.OriginalWidth));
         Images.ObserveFilterProperty(nameof(ImageDetails.OriginalHeight));
 
         Images.Filter = _image => _image is ImageDetails imageDetails
             && imageDetails.OriginalWidth > 0 && imageDetails.OriginalHeight > 0
-            && !imageDetails.Completed
+            && !imageDetails.IsCompleted
             && imageDetails.OriginalWidth * imageDetails.OriginalHeight >= minimumPixelsPerImageQuality[RequestedImageQuality]
             && (!imageDetails.IsHorizontal || ShowHorizontal && imageDetails.IsHorizontal)
             && (!imageDetails.IsVertical || ShowVertical && imageDetails.IsVertical)
@@ -110,6 +110,7 @@ public partial class MainViewModel : ObservableRecipient
             App.GetService<RedditSource>(),
             App.GetService<ImgurSource>(),
             App.GetService<RedditGallerySource>(),
+            App.GetService<TistorySource>(),
         })
         {
             if (source.CanHandle(uri, out var normalizedUri, out var currentPrefix))
@@ -166,7 +167,7 @@ public partial class MainViewModel : ObservableRecipient
     void CompleteAllImages()
     {
         foreach (ImageDetails image in Images.ToList())
-            image.Completed = true;
+            image.IsCompleted = true;
     }
 
     [RelayCommand(CanExecute = nameof(LoadingIsDone))]
@@ -192,7 +193,7 @@ public partial class MainViewModel : ObservableRecipient
             : throw new NotImplementedException();
         var localFileName = Path.Combine(path, $"{(currentPrefix is null ? null : $"{currentPrefix}-")}{Guid.NewGuid()}-{Guid.NewGuid()}.{extension}");
 
-        image.Completed = true;
+        image.IsCompleted = true;
 
         async Task download()
         {

@@ -51,6 +51,6 @@ public sealed partial class MainPage : Page
             else if (pointer.Properties.IsMiddleButtonPressed)
                 Process.Start(new ProcessStartInfo(image.Link!.ToString()) { UseShellExecute = true });
             else if (pointer.Properties.IsRightButtonPressed)
-                image.Completed = true;
+                image.IsCompleted = true;
     }
 }

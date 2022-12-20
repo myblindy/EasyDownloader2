@@ -53,7 +53,7 @@ partial class RedditGallerySource : BaseSource
                 var link = new Uri("https://i." + m.Groups[1].Value);
 
                 var img = (imageDetailsGenerator ?? (() => new ImageDetails()))();
-                img.Completed = localSettingsService.IsImageCompleted(link);
+                img.IsCompleted = localSettingsService.IsImageCompleted(link);
                 img.Link = link;
                 yield return img;
             }

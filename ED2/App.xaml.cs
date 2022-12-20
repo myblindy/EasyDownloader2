@@ -72,6 +72,7 @@ public partial class App : Application
                 services.AddTransient<DirectImageSource>();
                 services.AddTransient<ImgurSource>();
                 services.AddTransient<RedditGallerySource>();
+                services.AddTransient<TistorySource>();
 
                 // Configuration
                 services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
