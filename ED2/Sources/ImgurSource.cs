@@ -2,11 +2,13 @@
 
 partial class ImgurSource : BaseSource
 {
+    readonly MainViewModel mainViewModel;
     Func<ImageDetails>? imageDetailsGenerator;
     string? albumName;
 
-    public ImgurSource(ILocalSettingsService localSettingsService) : base(localSettingsService)
+    public ImgurSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
     {
+        this.mainViewModel = mainViewModel;
     }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
@@ -43,7 +45,7 @@ partial class ImgurSource : BaseSource
                 {
                     if (Path.GetExtension(link) is ".mp4" or ".gif") continue;     // ignore video links
 
-                    var img = (imageDetailsGenerator ?? (() => new ImageDetails()))();
+                    var img = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
                     img.IsCompleted = localSettingsService.IsImageCompleted(uri);
                     img.Link = uri;
 

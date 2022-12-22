@@ -51,7 +51,11 @@
 
                         <Border Opacity=".3" Background="Black"/>
                         <TextBlock MaxWidth="{x:Bind ScaledWidth, Mode=OneWay}" FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords">
-                            <Run Text="{x:Bind OriginalWidth, Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="x" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="{x:Bind OriginalHeight, Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text=" "/><Run Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}" Foreground="{ThemeResource TextFillColorTertiary}"/><LineBreak/>
+                            <Run Text="{x:Bind help:ViewHelpers.GetPrettyResolution(OriginalWidth, OriginalHeight), Mode=OneWay}" 
+                                 Foreground="{x:Bind help:ViewHelpers.GetResolutionBrush(OriginalWidth, OriginalHeight, MainViewModel.MinimumPixelsRequested), Mode=OneWay}"/>
+                            <Run Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}" Foreground="{ThemeResource TextFillColorTertiary}"/>
+                            <LineBreak/>
+                            
                             <Run Text="{x:Bind help:ViewHelpers.GetFullFlairText(Flair), Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="{x:Bind Title, Mode=OneWay}"/>
                         </TextBlock>
                     </Grid>

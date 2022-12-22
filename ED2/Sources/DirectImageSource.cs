@@ -2,8 +2,10 @@
 
 partial class DirectImageSource : BaseSource
 {
-    public DirectImageSource(ILocalSettingsService localSettingsService) : base(localSettingsService)
+    readonly MainViewModel mainViewModel;
+    public DirectImageSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
     {
+        this.mainViewModel = mainViewModel;
     }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, [NotNullWhen(true)] out string? prefix)
@@ -15,6 +17,7 @@ partial class DirectImageSource : BaseSource
 
     Uri? uri;
     Func<ImageDetails>? imageDetailsGenerator;
+
     public override Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
         this.uri = uri;
@@ -27,7 +30,7 @@ partial class DirectImageSource : BaseSource
     {
         if (uri is not null)
         {
-            var result = (imageDetailsGenerator ?? (static () => new ImageDetails()))();
+            var result = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
             result.Link = uri;
             result.IsCompleted = localSettingsService.IsImageCompleted(uri);
             yield return result;

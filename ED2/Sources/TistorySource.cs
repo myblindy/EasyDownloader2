@@ -1,18 +1,15 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ED2.Sources;
 
 partial class TistorySource : BaseSource
 {
+    readonly MainViewModel mainViewModel;
     Uri? uri;
 
-    public TistorySource(ILocalSettingsService localSettingsService) : base(localSettingsService)
+    public TistorySource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
     {
+        this.mainViewModel = mainViewModel;
     }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
@@ -86,7 +83,7 @@ partial class TistorySource : BaseSource
             foreach (var post in await Task.WhenAll(postTasks))
                 foreach (var image in post)
                     if (!image.uri.AbsolutePath.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase))
-                        yield return new ImageDetails
+                        yield return new ImageDetails(mainViewModel)
                         {
                             IsCompleted = localSettingsService.IsImageCompleted(image.uri),
                             Title = image.name,

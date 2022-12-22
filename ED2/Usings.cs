@@ -1,6 +1,5 @@
 ﻿global using CommunityToolkit.Mvvm.ComponentModel;
 global using CommunityToolkit.Mvvm.Input;
-global using CommunityToolkit.WinUI.UI;
 global using Newtonsoft.Json.Linq;
 global using WinUIEx;
 
@@ -8,7 +7,6 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Options;
 global using Microsoft.UI;
-global using Microsoft.UI.Dispatching;
 global using Microsoft.UI.Xaml;
 global using Microsoft.UI.Xaml.Controls;
 global using Microsoft.UI.Xaml.Data;

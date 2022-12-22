@@ -5,12 +5,15 @@ namespace ED2.Sources;
 
 partial class TwitterSource : BaseSource
 {
+    readonly MainViewModel mainViewModel;
     readonly ITwitterService twitterService;
     TwitterClient? userTwitterClient;
     string? username;
 
-    public TwitterSource(ILocalSettingsService localSettingsService, ITwitterService twitterService) : base(localSettingsService)
+    public TwitterSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, ITwitterService twitterService) 
+        : base(localSettingsService)
     {
+        this.mainViewModel = mainViewModel;
         this.twitterService = twitterService;
     }
 
@@ -53,7 +56,7 @@ partial class TwitterSource : BaseSource
                     {
                         var size = mediaEntry.Sizes.MaxBy(s => s.Value.Width * s.Value.Height);
                         var link = new Uri($"{mediaEntry.MediaURLHttps}:orig");
-                        yield return new TwitterImageDetails()
+                        yield return new TwitterImageDetails(mainViewModel)
                         {
                             Tweet = item,
                             IsCompleted = localSettingsService.IsImageCompleted(link),
@@ -79,5 +82,9 @@ partial class TwitterSource : BaseSource
 
 class TwitterImageDetails : ImageDetails
 {
+    public TwitterImageDetails(MainViewModel mainViewModel) : base(mainViewModel)
+    {
+    }
+
     public required ITweet Tweet { get; init; }
 }

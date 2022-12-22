@@ -4,7 +4,6 @@
 
 #nullable disable
 
-using System;
 using System.Collections;
 
 namespace MB.CommunityToolkit.WinUI.UI

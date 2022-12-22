@@ -14,6 +14,11 @@ public enum ImageQuality
 
 public partial class ImageDetails : ObservableRecipient
 {
+    public MainViewModel MainViewModel { get; }
+
+    public ImageDetails(MainViewModel mainViewModel) =>
+        MainViewModel = mainViewModel;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ScaledWidth))]
     int originalWidth;

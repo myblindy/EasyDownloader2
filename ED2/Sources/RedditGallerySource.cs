@@ -4,11 +4,13 @@ namespace ED2.Sources;
 
 partial class RedditGallerySource : BaseSource
 {
+    readonly MainViewModel mainViewModel;
     Func<ImageDetails>? imageDetailsGenerator;
     Uri? uri;
 
-    public RedditGallerySource(ILocalSettingsService localSettingsService) : base(localSettingsService)
+    public RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
     {
+        this.mainViewModel = mainViewModel;
     }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
@@ -52,7 +54,7 @@ partial class RedditGallerySource : BaseSource
 
                 var link = new Uri("https://i." + m.Groups[1].Value);
 
-                var img = (imageDetailsGenerator ?? (() => new ImageDetails()))();
+                var img = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
                 img.IsCompleted = localSettingsService.IsImageCompleted(link);
                 img.Link = link;
                 yield return img;

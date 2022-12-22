@@ -5,13 +5,15 @@ namespace ED2.Sources;
 
 partial class RedditSource : BaseSource
 {
+    readonly MainViewModel mainViewModel;
     readonly IRedditService redditService;
     DispatcherQueue? mainDispatcherQueue;
     RedditClient? redditClient;
     string? subReddit;
 
-    public RedditSource(IRedditService redditService, ILocalSettingsService localSettingsService) : base(localSettingsService)
+    public RedditSource(MainViewModel mainViewModel, IRedditService redditService, ILocalSettingsService localSettingsService) : base(localSettingsService)
     {
+        this.mainViewModel = mainViewModel;
         this.redditService = redditService;
     }
 
@@ -67,7 +69,7 @@ partial class RedditSource : BaseSource
                     {
                         if (source.CanHandle(new Uri(linkPost.URL), out _, out _))
                         {
-                            await source.LoadAsync(new Uri(linkPost.URL), mainDispatcherQueue!, () => new RedditImageDetails
+                            await source.LoadAsync(new Uri(linkPost.URL), mainDispatcherQueue!, () => new RedditImageDetails(mainViewModel)
                             {
                                 Post = post,
                                 Flair = string.IsNullOrWhiteSpace(post.Listing.LinkFlairText) ? null : WebUtility.HtmlDecode(post.Listing.LinkFlairText).Trim(),
@@ -98,5 +100,9 @@ partial class RedditSource : BaseSource
 
 class RedditImageDetails : ImageDetails
 {
+    public RedditImageDetails(MainViewModel mainViewModel) : base(mainViewModel)
+    {
+    }
+
     public required Post Post { get; init; }
 }
