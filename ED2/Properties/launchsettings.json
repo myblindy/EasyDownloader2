@@ -2,10 +2,16 @@
   "profiles": {
     "ED2 (Package)": {
       "commandName": "MsixPackage",
-      "nativeDebugging": false
+      "nativeDebugging": true
     },
     "ED2 (Unpackaged)": {
       "commandName": "Project",
+      "nativeDebugging": true
+    },
+    "ED2 App Execution Alias": {
+      "commandName": "Executable",
+      "executablePath": "MB.EasyDownloader2.exe",
+      "commandLineArgs": "arf",
       "nativeDebugging": true
     }
   }

@@ -10,8 +10,8 @@ public class LocalSettingsService : ILocalSettingsService
     private readonly IFileService _fileService;
     private readonly LocalSettingsOptions _options;
 
-    private readonly ILiteDatabase db;
-    private readonly ILiteCollection<CompletedImageDbSettings> completedImageDbSettingsDbCollection;
+    private ILiteDatabase? db;
+    private ILiteCollection<CompletedImageDbSettings>? completedImageDbSettingsDbCollection;
 
     private readonly string _localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
     private readonly string _applicationDataFolder;
@@ -30,9 +30,6 @@ public class LocalSettingsService : ILocalSettingsService
         _localsettingsFile = _options.LocalSettingsFile ?? _defaultLocalSettingsFile;
 
         _settings = new Dictionary<string, object>();
-
-        db = _fileService.GetSettingsDatabase(_applicationDataFolder);
-        completedImageDbSettingsDbCollection = db.GetCollection<CompletedImageDbSettings>();
     }
 
     private async Task InitializeAsync()
@@ -90,12 +87,27 @@ public class LocalSettingsService : ILocalSettingsService
         public Uri Uri { get; set; } = null!;
     }
 
-    public IList<Uri> GetSuggestions(string partial) =>
-        db.GetCollection<GeneralDbSettings>().FindAll().FirstOrDefault()?.RecentlyUsedUris?
+    [MemberNotNull(nameof(db), nameof(completedImageDbSettingsDbCollection))]
+    void EnsureDatabaseIsOpened()
+    {
+        if (db is not null && completedImageDbSettingsDbCollection is not null) return;
+
+        db = _fileService.GetSettingsDatabase(_applicationDataFolder);
+        completedImageDbSettingsDbCollection = db.GetCollection<CompletedImageDbSettings>();
+    }
+
+    public IList<Uri> GetSuggestions(string partial)
+    {
+        EnsureDatabaseIsOpened();
+
+        return db.GetCollection<GeneralDbSettings>().FindAll().FirstOrDefault()?.RecentlyUsedUris?
             .Where(w => w.ToString().Contains(partial, StringComparison.InvariantCultureIgnoreCase)).ToList() ?? (IList<Uri>)Array.Empty<Uri>();
+    }
 
     public void AddSuggestion(Uri suggestion)
     {
+        EnsureDatabaseIsOpened();
+
         var collection = db.GetCollection<GeneralDbSettings>();
         if (collection.Count() == 0)
             collection.Insert(new GeneralDbSettings()
@@ -114,11 +126,17 @@ public class LocalSettingsService : ILocalSettingsService
         }
     }
 
-    public bool IsImageCompleted(Uri uri) =>
-        completedImageDbSettingsDbCollection.FindOne(w => w.Uri == uri) is not null;
+    public bool IsImageCompleted(Uri uri)
+    {
+        EnsureDatabaseIsOpened();
+
+        return completedImageDbSettingsDbCollection.FindOne(w => w.Uri == uri) is not null;
+    }
 
     public void SetImageCompleted(Uri uri)
     {
+        EnsureDatabaseIsOpened();
+
         completedImageDbSettingsDbCollection.EnsureIndex(w => w.Uri);
         if (!IsImageCompleted(uri))
             completedImageDbSettingsDbCollection.Insert(new CompletedImageDbSettings() { Uri = uri });

@@ -7,7 +7,9 @@
   xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/templatestudio"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
-  IgnorableNamespaces="uap rescap genTemplate">
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  IgnorableNamespaces="uap rescap genTemplate uap3 uap5">
 
   <Identity
     Name="4587B642-56A8-4B48-8E8C-095333528CCA"
@@ -43,17 +45,25 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
-          <desktop:Extension Category="windows.toastNotificationActivation">
-              <desktop:ToastNotificationActivation ToastActivatorCLSID="79DA79E9-7595-47CD-88A5-DF033B18C82C" />
-          </desktop:Extension>
+        <desktop:Extension Category="windows.toastNotificationActivation">
+          <desktop:ToastNotificationActivation ToastActivatorCLSID="79DA79E9-7595-47CD-88A5-DF033B18C82C" />
+        </desktop:Extension>
 
-          <com:Extension Category="windows.comServer">
-              <com:ComServer>
-                  <com:ExeServer Executable="ED2.exe" Arguments="----AppNotificationActivated:" DisplayName="Toast activator">
-                      <com:Class Id="79DA79E9-7595-47CD-88A5-DF033B18C82C" DisplayName="Toast activator"/>
-                  </com:ExeServer>
-              </com:ComServer>
-          </com:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="ED2.exe" Arguments="----AppNotificationActivated:" DisplayName="Toast activator">
+              <com:Class Id="79DA79E9-7595-47CD-88A5-DF033B18C82C" DisplayName="Toast activator"/>
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+
+        <uap5:Extension
+                Category="windows.appExecutionAlias"
+                EntryPoint="Windows.FullTrustApplication">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="MB.EasyDownloader2.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
       </Extensions>
     </Application>
   </Applications>

@@ -46,13 +46,15 @@ public partial class SettingsViewModel : ObservableRecipient
     Task BrowseSquareSaveFolder() =>
         BrowseImageSaveFolderHelper(path => MainViewModel.SquareSaveFolder = path);
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public SettingsViewModel(IThemeSelectorService themeSelectorService, MainViewModel mainViewModel)
     {
         _themeSelectorService = themeSelectorService;
         MainViewModel = mainViewModel;
-        elementTheme = _themeSelectorService.Theme;
-        versionDescription = GetVersionDescription();
+        ElementTheme = _themeSelectorService.Theme;
+        VersionDescription = GetVersionDescription();
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     private static string GetVersionDescription()
     {

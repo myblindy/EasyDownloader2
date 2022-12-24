@@ -20,7 +20,7 @@ public partial class App : Application
 
     public static HttpClient HttpClient { get; } = new(new HttpClientHandler()
     {
-        AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate,
+        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
         CookieContainer = new(),
         AllowAutoRedirect = true
     });
@@ -54,6 +54,7 @@ public partial class App : Application
                 services.AddSingleton<IDialogService, DialogService>();
                 services.AddSingleton<ITwitterService, TwitterService>();
                 services.AddSingleton<IRedditService, RedditService>();
+                services.AddSingleton<IJumpListService, JumpListService>();
 
                 // Core Services
                 services.AddSingleton<IFileService, FileService>();
@@ -91,6 +92,18 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+
+        var kind = args.UWPLaunchActivatedEventArgs.Kind;
+        var currentInstance = AppInstance.GetCurrent();
+
+        if (currentInstance != null)
+        {
+            var activationArgs = currentInstance.GetActivatedEventArgs();
+            if (activationArgs != null)
+            {
+                var extendedKind = activationArgs.Kind;
+            }
+        }
 
         await GetService<IActivationService>().ActivateAsync(args);
     }

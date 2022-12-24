@@ -47,3 +47,4 @@ global using ED2.ViewModels;
 global using ED2.Views;
 
 global using DispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue;
+global using AppInstance = Microsoft.Windows.AppLifecycle.AppInstance;

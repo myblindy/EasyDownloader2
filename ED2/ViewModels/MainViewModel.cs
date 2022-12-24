@@ -1,4 +1,8 @@
-﻿namespace ED2.ViewModels;
+﻿using System.Runtime.CompilerServices;
+using Windows.Win32;
+using Windows.Win32.UI.Shell;
+
+namespace ED2.ViewModels;
 
 public partial class MainViewModel : ObservableRecipient
 {

@@ -17,6 +17,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
     <AnalysisMode>recommended</AnalysisMode>
+    <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,18 +25,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0-preview1" />
+    <!--<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />-->
+
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.25267-preview" />
+
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0-preview2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
-    <PackageReference Include="LiteDB" Version="5.0.12" />
+    <PackageReference Include="LiteDB" Version="5.0.15" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221116.1" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="Reddit" Version="1.5.2" />
     <PackageReference Include="Reddit.AuthTokenRetrieverLib" Version="1.5.2" />
     <PackageReference Include="TweetinviAPI" Version="5.0.4" />
-    <PackageReference Include="WinUIEx" Version="1.8.0" />
+    <PackageReference Include="WinUIEx" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,16 +14,20 @@ public class ActivationService : IActivationService
         _themeSelectorService = themeSelectorService;
     }
 
+    bool firstActivation = true;
     public async Task ActivateAsync(object activationArgs)
     {
         // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the MainWindow Content.
-        if (App.MainWindow.Content == null)
+        if (firstActivation)
         {
-            _shell = App.GetService<ShellPage>();
-            App.MainWindow.Content = _shell ?? new Frame();
+            await InitializeAsync();
+
+            // Set the MainWindow Content.
+            if (App.MainWindow.Content == null)
+            {
+                _shell = App.GetService<ShellPage>();
+                App.MainWindow.Content = _shell ?? new Frame();
+            }
         }
 
         // Handle activation via ActivationHandlers.
@@ -33,7 +37,10 @@ public class ActivationService : IActivationService
         App.MainWindow.Activate();
 
         // Execute tasks after activation.
-        await StartupAsync();
+        if (firstActivation)
+            await StartupAsync();
+
+        firstActivation = false;
     }
 
     private async Task HandleActivationAsync(object activationArgs)
@@ -60,6 +67,6 @@ public class ActivationService : IActivationService
     private async Task StartupAsync()
     {
         await _themeSelectorService.SetRequestedThemeAsync();
-        await Task.CompletedTask;
+        App.GetService<IJumpListService>().Update();
     }
 }
