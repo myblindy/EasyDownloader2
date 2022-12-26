@@ -28,7 +28,7 @@ namespace MB.CommunityToolkit.WinUI.UI
 
         private readonly bool _liveShapingEnabled;
 
-        private readonly HashSet<string> _observedFilterProperties = new HashSet<string>();
+        private readonly HashSet<string> _observedFilterProperties = new();
 
         private IList _source;
 

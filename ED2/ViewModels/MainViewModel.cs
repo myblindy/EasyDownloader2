@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
 
@@ -56,6 +57,8 @@ public partial class MainViewModel : ObservableRecipient
         localSettingsService.ReadSettingAsync(nameof(RequestedImageQuality), ImageQuality.HD)
             .ContinueWith(async t => RequestedImageQuality = await t, TaskContinuationOptions.ExecuteSynchronously);
     }
+
+    public DispatcherQueue MainDispatcherQueue { get; } = DispatcherQueue.GetForCurrentThread();
 
     [ObservableProperty]
     int minimumPixelsRequested;
@@ -130,7 +133,7 @@ public partial class MainViewModel : ObservableRecipient
                 try
                 {
                     LoadingIsDone = false;
-                    await source.LoadAsync(uri, DispatcherQueue.GetForCurrentThread());
+                    await source.LoadAsync(uri, MainDispatcherQueue);
                 }
                 finally { LoadingIsDone = true; }
 
@@ -145,14 +148,19 @@ public partial class MainViewModel : ObservableRecipient
         await dialogService.ShowErrorAsync("Unable to find a loader for the given URI.");
     }
 
+    const int MaxImagesPerPage = 50;
+
+    [ObservableProperty]
+    int loadedImages, loadingImages;
+
     [RelayCommand(CanExecute = nameof(LoadingIsDone))]
     async Task LoadNextPageAsync()
     {
         try
         {
             LoadingIsDone = false;
+            LoadedImages = LoadingImages = 0;
 
-            const int MaxImagesPerPage = 50;
             Images.Clear();
 
             var ct = cancellationTokenSource.Token;

@@ -1,4 +1,6 @@
-﻿namespace ED2.Activation;
+﻿using System.Collections.Immutable;
+
+namespace ED2.Activation;
 
 public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventArgs>
 {

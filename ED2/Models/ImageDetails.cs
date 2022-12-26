@@ -41,7 +41,8 @@ public partial class ImageDetails : ObservableRecipient
     {
         if (value is null || IsCompleted) return;
 
-        var dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        MainViewModel.MainDispatcherQueue.TryEnqueue(() => ++MainViewModel.LoadingImages);
+
         _ = Task.Run(async () =>
         {
             var rawBytes = await App.HttpClient.GetByteArrayAsync(value);
@@ -64,12 +65,16 @@ public partial class ImageDetails : ObservableRecipient
                 }, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
             var sourceDecodedPixels = pixelData.DetachPixelData();
 
-            dispatcherQueue.TryEnqueue(() =>
+            MainViewModel.MainDispatcherQueue.TryEnqueue(() =>
             {
                 var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
                 sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
 
                 (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight);
+
+                --MainViewModel.LoadingImages;
+                ++MainViewModel.LoadedImages;
+
                 ImageSource = output;
                 Loaded = true;
             });

@@ -5,12 +5,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:animatedvisuals="using:Microsoft.UI.Xaml.Controls.AnimatedVisuals"
+    xmlns:help="using:ED2.Helpers"
     Loaded="OnLoaded"
     Unloaded="OnUnloaded"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -24,9 +26,6 @@
         </Grid>
 
         <CommandBar Grid.Row="1" OverflowButtonVisibility="Collapsed">
-            <AppBarElementContainer>
-                <ProgressRing Visibility="{x:Bind ViewModel.MainViewModel.LoadingIsDone, Mode=OneWay, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
-            </AppBarElementContainer>
             <AppBarElementContainer>
                 <SplitButton Command="{x:Bind ViewModel.MainViewModel.CompleteAllImagesAndLoadNextPageCommand}">
                     <SplitButton.Content>
@@ -70,8 +69,10 @@
             </AppBarButton>
         </CommandBar>
 
-        <Grid Grid.Row="2" Margin="{StaticResource MenuBarContentMargin}">
-            <Frame x:Name="NavigationFrame" />
-        </Grid>
+        <ProgressBar Grid.Row="2" Maximum="{x:Bind help:ViewHelpers.Sum(ViewModel.MainViewModel.LoadingImages, ViewModel.MainViewModel.LoadedImages), Mode=OneWay}"
+                     Value="{x:Bind ViewModel.MainViewModel.LoadedImages, Mode=OneWay}"
+                     Visibility="{x:Bind help:ViewHelpers.VisibleIfNotZero(ViewModel.MainViewModel.LoadingImages), Mode=OneWay}"/>
+
+        <Frame x:Name="NavigationFrame" Grid.Row="3" Margin="{StaticResource MenuBarContentMargin}"/>
     </Grid>
 </Page>

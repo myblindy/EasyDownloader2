@@ -15,4 +15,8 @@ static class ViewHelpers
             > 1.5 => new SolidColorBrush(Colors.Yellow),
             _ => new SolidColorBrush(Colors.LightGray)
         };
+
+    public static int Sum(int a, int b) => a + b;
+
+    public static Visibility VisibleIfNotZero(int a) => a != 0 ? Visibility.Visible: Visibility.Collapsed;
 }
