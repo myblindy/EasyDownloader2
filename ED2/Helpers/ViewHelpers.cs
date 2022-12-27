@@ -16,7 +16,7 @@ static class ViewHelpers
             _ => new SolidColorBrush(Colors.LightGray)
         };
 
-    public static int Sum(int a, int b) => a + b;
+    public static int GetLoadingProgressBarMaximum(int loading, int loaded, bool isLoadingDone) => loading + loaded + (isLoadingDone ? 0 : 1);
 
-    public static Visibility VisibleIfNotZero(int a) => a != 0 ? Visibility.Visible: Visibility.Collapsed;
+    public static Visibility GetLoadingProgressBarVisibility(int loading, bool isLoadingDone) => loading != 0 || !isLoadingDone ? Visibility.Visible : Visibility.Collapsed;
 }

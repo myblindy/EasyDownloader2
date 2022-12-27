@@ -101,9 +101,9 @@ public partial class MainViewModel : ObservableRecipient
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(OpenCommand), nameof(LoadNextPageCommand), nameof(CompleteAllImagesCommand), nameof(CompleteAllImagesAndLoadNextPageCommand))]
-    bool loadingIsDone = true;
+    bool isLoadingDone = true;
 
-    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    [RelayCommand(CanExecute = nameof(IsLoadingDone))]
     async Task OpenAsync(Uri uri)
     {
         Images.Clear();
@@ -132,10 +132,10 @@ public partial class MainViewModel : ObservableRecipient
 
                 try
                 {
-                    LoadingIsDone = false;
+                    IsLoadingDone = false;
                     await source.LoadAsync(uri, MainDispatcherQueue);
                 }
-                finally { LoadingIsDone = true; }
+                finally { IsLoadingDone = true; }
 
                 currentSourceEnumerator = source.EnumerateImageDetails().GetAsyncEnumerator(cancellationTokenSource.Token);
                 await LoadNextPageAsync();
@@ -153,12 +153,12 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     int loadedImages, loadingImages;
 
-    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    [RelayCommand(CanExecute = nameof(IsLoadingDone))]
     async Task LoadNextPageAsync()
     {
         try
         {
-            LoadingIsDone = false;
+            IsLoadingDone = false;
             LoadedImages = LoadingImages = 0;
 
             Images.Clear();
@@ -172,17 +172,17 @@ public partial class MainViewModel : ObservableRecipient
                     else
                         Images.Add(currentSourceEnumerator.Current);
         }
-        finally { LoadingIsDone = true; }
+        finally { IsLoadingDone = true; }
     }
 
-    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    [RelayCommand(CanExecute = nameof(IsLoadingDone))]
     void CompleteAllImages()
     {
         foreach (ImageDetails image in Images.ToList())
             image.IsCompleted = true;
     }
 
-    [RelayCommand(CanExecute = nameof(LoadingIsDone))]
+    [RelayCommand(CanExecute = nameof(IsLoadingDone))]
     async Task CompleteAllImagesAndLoadNextPageAsync()
     {
         CompleteAllImages();
