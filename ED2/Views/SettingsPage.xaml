@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:ED2.Helpers"
     xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:system="using:System"
     mc:Ignorable="d"
     Margin="30,0">
     <Page.Resources>
@@ -19,10 +20,8 @@
 
         <TextBlock Grid.Row="0" x:Uid="Settings_Title" Style="{StaticResource PageTitleStyle}" />
         <StackPanel Grid.Row="1" x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
-
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock>Save Folders</TextBlock>
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">Save Folders</TextBlock>
 
                 <Grid Margin="{StaticResource XSmallTopMargin}" ColumnSpacing="5" RowSpacing="5">
                     <Grid.ColumnDefinitions>
@@ -49,7 +48,7 @@
             </StackPanel>
 
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
+                <TextBlock x:Uid="Settings_Theme" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton
@@ -89,12 +88,11 @@
 
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
                 <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
-
-                <TextBlock
-                    x:Uid="Settings_AboutDescription"
-                    Margin="{StaticResource XSmallTopMargin}"
-                    Style="{ThemeResource BodyTextBlockStyle}" />
-                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}">
+                    <Run Text="©"/>
+                    <Run Text="{x:Bind system:DateTime.Today.Year}"/>
+                    <Run>MyBlindy</Run>
+                </TextBlock>
             </StackPanel>
         </StackPanel>
     </Grid>
