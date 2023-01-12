@@ -45,7 +45,7 @@ public partial class ImageDetails : ObservableRecipient
 
         _ = Task.Run(async () =>
         {
-            var rawBytes = await App.HttpClient.GetByteArrayAsync(value);
+            var rawBytes = value!.IsLoopback ? File.ReadAllBytes(value.LocalPath) : await App.HttpClient.GetByteArrayAsync(value);
 
             using var tempStream = new MemoryStream();
             tempStream.Write(rawBytes);

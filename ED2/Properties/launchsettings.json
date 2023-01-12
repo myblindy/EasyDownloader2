@@ -2,7 +2,7 @@
   "profiles": {
     "ED2 (Package)": {
       "commandName": "MsixPackage",
-      "nativeDebugging": true
+      "nativeDebugging": false
     },
     "ED2 (Unpackaged)": {
       "commandName": "Project",

@@ -118,6 +118,7 @@ public partial class MainViewModel : ObservableRecipient
             App.GetService<ImgurSource>(),
             App.GetService<RedditGallerySource>(),
             App.GetService<TistorySource>(),
+            App.GetService<LocalSource>(),
         })
         {
             if (source.CanHandle(uri, out var normalizedUri, out var currentPrefix))
@@ -189,6 +190,12 @@ public partial class MainViewModel : ObservableRecipient
         await LoadNextPageAsync();
     }
 
+    static readonly char[] validPathCharacters =
+        Enumerable.Range(0, 'z' - 'a').Select(i => (char)('a' + i)).Concat(
+            Enumerable.Range(0, 'Z' - 'A').Select(i => (char)('A' + i))).Concat(
+            Enumerable.Range(0, '9' - '1').Select(i => (char)('1' + i))).Append('0')
+        .ToArray();
+
     [RelayCommand]
     async Task SaveImage(ImageDetails image)
     {
@@ -199,17 +206,16 @@ public partial class MainViewModel : ObservableRecipient
         if (path is null || image.Link is null)
             return;
 
-        if (image.Link.IsFile)
-            throw new NotImplementedException();
         var extension = SavePathRegex().Match(image.Link.LocalPath) is { Success: true } m ? m.Groups[1].Value
             : throw new NotImplementedException();
-        var localFileName = Path.Combine(path, $"{(currentPrefix is null ? null : $"{currentPrefix}-")}{Guid.NewGuid()}-{Guid.NewGuid()}.{extension}");
+        var localFileName = Path.Combine(path,
+            $"{(currentPrefix is null ? null : $"{currentPrefix}-")}{string.Concat(Enumerable.Range(0, 40).Select(_ => validPathCharacters[Random.Shared.Next(validPathCharacters.Length)]))}.{extension}");
 
         image.IsCompleted = true;
 
         async Task download()
         {
-            using var srcStream = await App.HttpClient.GetStreamAsync(image.Link);
+            using var srcStream = image.Link.IsLoopback ? File.OpenRead(image.Link.LocalPath) : await App.HttpClient.GetStreamAsync(image.Link);
             using var dstStream = File.Create(localFileName!);
             await srcStream.CopyToAsync(dstStream);
         }
@@ -217,6 +223,6 @@ public partial class MainViewModel : ObservableRecipient
         await Task.WhenAll(download(), currentSource is null ? Task.CompletedTask : currentSource.OnSaveImage(image));
     }
 
-    [GeneratedRegex("/[^/:]+?(?:\\.([^:]+?))(?::.*?)?$")]
+    [GeneratedRegex(@"[/\\][^/\\:]+(?:\.([^:.]+?))(?::.*?)?$")]
     private static partial Regex SavePathRegex();
 }
