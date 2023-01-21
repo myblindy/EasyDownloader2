@@ -50,14 +50,22 @@
                         <ProgressRing Grid.RowSpan="2" Grid.ColumnSpan="2" IsActive="{x:Bind Loaded, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"/>
 
                         <Border Opacity=".3" Background="Black"/>
-                        <TextBlock MaxWidth="{x:Bind ScaledWidth, Mode=OneWay}" FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords">
-                            <Run Text="{x:Bind help:ViewHelpers.GetPrettyResolution(OriginalWidth, OriginalHeight), Mode=OneWay}" 
-                                 Foreground="{x:Bind help:ViewHelpers.GetResolutionBrush(OriginalWidth, OriginalHeight, MainViewModel.MinimumPixelsRequested), Mode=OneWay}"/>
-                            <Run Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}" Foreground="{ThemeResource TextFillColorTertiary}"/>
-                            <LineBreak/>
-                            
-                            <Run Text="{x:Bind help:ViewHelpers.GetFullFlairText(Flair), Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/><Run Text="{x:Bind Title, Mode=OneWay}"/>
-                        </TextBlock>
+                        <StackPanel Orientation="Vertical" MaxWidth="{x:Bind ScaledWidth, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords"
+                                           Text="{x:Bind help:ViewHelpers.GetPrettyResolution(OriginalWidth, OriginalHeight), Mode=OneWay}" 
+                                           Foreground="{x:Bind help:ViewHelpers.GetResolutionBrush(OriginalWidth, OriginalHeight, MainViewModel.MinimumPixelsRequested), Mode=OneWay}"/>
+                                <TextBlock FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords"
+                                           Text="{x:Bind DatePosted, Mode=OneWay, Converter={StaticResource StringFormatConverter}, ConverterParameter={}{0:yyyy-MM-dd HH:mm}}" 
+                                           Foreground="{ThemeResource TextFillColorTertiary}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords"
+                                           Text="{x:Bind help:ViewHelpers.GetFullFlairText(Flair), Mode=OneWay}" Foreground="{ThemeResource TextFillColorTertiary}"/>
+                                <TextBlock FontSize="{StaticResource SmallFontSize}" TextWrapping="WrapWholeWords"
+                                           Text="{x:Bind Title, Mode=OneWay}"/>
+                            </StackPanel>
+                        </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ItemsRepeater>

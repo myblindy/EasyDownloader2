@@ -31,9 +31,14 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        //DebugSettings.IsTextPerformanceVisualizationEnabled = true;
-        //DebugSettings.EnableFrameRateCounter = true;
-        //DebugSettings.FailFastOnErrors = true;
+#if DEBUG
+        if (Debugger.IsAttached)
+        {
+            DebugSettings.IsTextPerformanceVisualizationEnabled = true;
+            //DebugSettings.EnableFrameRateCounter = true;
+            //DebugSettings.FailFastOnErrors = true;
+        }
+#endif
 
         Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()

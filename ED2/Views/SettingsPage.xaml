@@ -21,7 +21,7 @@
         <TextBlock Grid.Row="0" x:Uid="Settings_Title" Style="{StaticResource PageTitleStyle}" />
         <StackPanel Grid.Row="1" x:Name="ContentArea">
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}">Save Folders</TextBlock>
+                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" Text="Save Folders"/>
 
                 <Grid Margin="{StaticResource XSmallTopMargin}" ColumnSpacing="5" RowSpacing="5">
                     <Grid.ColumnDefinitions>
@@ -35,13 +35,13 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock FontSize="15" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Horizontal:</TextBlock>
+                    <TextBlock FontSize="15" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Horizontal:"/>
                     <TextBox FontSize="15" Grid.Row="0" Grid.Column="1" Margin="20,0,0,0" Text="{x:Bind ViewModel.MainViewModel.HorizontalSaveFolder, Mode=TwoWay}"/>
                     <Button FontSize="15" Grid.Row="0" Grid.Column="2" Command="{x:Bind ViewModel.BrowseHorizontalSaveFolderCommand}">...</Button>
-                    <TextBlock FontSize="15" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Vertical:</TextBlock>
+                    <TextBlock FontSize="15" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Vertical:"/>
                     <TextBox FontSize="15" Grid.Row="1" Grid.Column="1" Margin="20,0,0,0" Text="{x:Bind ViewModel.MainViewModel.VerticalSaveFolder, Mode=TwoWay}"/>
                     <Button FontSize="15" Grid.Row="1" Grid.Column="2" Command="{x:Bind ViewModel.BrowseVerticalSaveFolderCommand}">...</Button>
-                    <TextBlock FontSize="15" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Square:</TextBlock>
+                    <TextBlock FontSize="15" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Text="Square:"/>
                     <TextBox FontSize="15" Grid.Row="2" Grid.Column="1" Margin="20,0,0,0" Text="{x:Bind ViewModel.MainViewModel.SquareSaveFolder, Mode=TwoWay}"/>
                     <Button FontSize="15" Grid.Row="2" Grid.Column="2" Command="{x:Bind ViewModel.BrowseSquareSaveFolderCommand}">...</Button>
                 </Grid>
