@@ -44,37 +44,49 @@ partial class TistorySource : BaseSource
             using (var stream = await App.HttpClient.GetStreamAsync(uri).ConfigureAwait(true))
                 doc.Load(stream);
 
-            var postTasks = new List<Task<List<(string name, DateTime date, int width, int height, Uri uri)>>>();
-            foreach (var pageNode in doc.DocumentNode.SelectNodes(@"//li[contains(@class, 'item_category')]"))
-                if (pageNode.SelectNodes(".//a[contains(@class, 'link_category')]") is [{ } firstChildNode]
-                    && firstChildNode.SelectNodes(".//div[contains(@class, 'info')]//*[contains(@class, 'name')]") is [{ } nameNode]
-                    && firstChildNode.SelectNodes(".//div[contains(@class, 'info')]//*[contains(@class, 'date')]") is [{ } dateNode])
+            var postTasks = new List<Task<List<(string name, DateTime? date, int width, int height, Uri uri)>>>();
+
+            void AddImageCrawlingTask(string postName, DateTime? date, Uri postUri) =>
+                postTasks.Add(Task.Run(async () =>
                 {
-                    var postName = nameNode.InnerText;
-                    var date = DateTime.Parse(dateNode.InnerText);
-                    var postUri = new Uri(uri, firstChildNode.Attributes["href"].Value);
+                    var postDoc = new HtmlDocument();
+                    using (var postStream = await App.HttpClient.GetStreamAsync(postUri).ConfigureAwait(false))
+                        postDoc.Load(postStream);
 
-                    postTasks.Add(Task.Run(async () =>
+                    var images = new List<(string name, DateTime? date, int width, int height, Uri uri)>();
+                    if (postDoc.DocumentNode.SelectNodes("//figure[contains(@class, 'imageblock')]") is { } imageNodes)
+                        foreach (var imageNode in imageNodes)
+                        {
+                            if (imageNode.Attributes["data-origin-width"].Value is not { } widthString || !int.TryParse(widthString, out var width))
+                                width = 0;
+                            if (imageNode.Attributes["data-origin-height"].Value is not { } heightString || !int.TryParse(heightString, out var height))
+                                height = 0;
+                            if (imageNode.SelectSingleNode(".//img[@src]")?.Attributes["src"].Value is { } url)
+                                images.Add((postName, date, width, height, new Uri(url)));
+                        }
+
+                    return images;
+                }));
+
+            if (doc.DocumentNode.SelectNodes(@"//li[contains(@class, 'item_category')]") is { } itemCategoryNode)
+            {
+                foreach (var pageNode in itemCategoryNode)
+                    if (pageNode.SelectNodes(".//a[contains(@class, 'link_category')]") is [{ } firstChildNode]
+                        && firstChildNode.SelectNodes(".//div[contains(@class, 'info')]//*[contains(@class, 'name')]") is [{ } nameNode]
+                        && firstChildNode.SelectNodes(".//div[contains(@class, 'info')]//*[contains(@class, 'date')]") is [{ } dateNode])
                     {
-                        var postDoc = new HtmlDocument();
-                        using (var postStream = await App.HttpClient.GetStreamAsync(postUri).ConfigureAwait(false))
-                            postDoc.Load(postStream);
-
-                        var images = new List<(string name, DateTime date, int width, int height, Uri uri)>();
-                        if (postDoc.DocumentNode.SelectNodes("//figure[contains(@class, 'imageblock')]") is { } imageNodes)
-                            foreach (var imageNode in imageNodes)
-                            {
-                                if (imageNode.Attributes["data-origin-width"].Value is not { } widthString || !int.TryParse(widthString, out var width))
-                                    width = 0;
-                                if (imageNode.Attributes["data-origin-height"].Value is not { } heightString || !int.TryParse(heightString, out var height))
-                                    height = 0;
-                                if (imageNode.SelectSingleNode(".//img[@src]")?.Attributes["src"].Value is { } url)
-                                    images.Add((postName, date, width, height, new Uri(url)));
-                            }
-
-                        return images;
-                    }));
-                }
+                        AddImageCrawlingTask(nameNode.InnerText, DateTime.Parse(dateNode.InnerText),
+                            new Uri(uri, firstChildNode.Attributes["href"].Value));
+                    }
+            }
+            else if (doc.DocumentNode.SelectNodes(@"//li[contains(@class, 'item_post')]") is { } itemPostNode)
+                foreach (var pageNode in itemPostNode)
+                    if (pageNode.SelectSingleNode(@".//a[contains(@class, 'link_post')]") is { } linkPostNode
+                        && pageNode.SelectSingleNode(@".//strong[contains(@class, 'name')]") is { } nameNode)
+                    {
+                        AddImageCrawlingTask(nameNode.InnerText, null,
+                            new Uri(uri, linkPostNode.Attributes["href"].Value));
+                    }
 
             // we're done when we find no more posts
             if (postTasks.Count == 0)
