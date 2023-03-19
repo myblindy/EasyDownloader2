@@ -80,12 +80,32 @@ partial class TistorySource : BaseSource
                     }
             }
             else if (doc.DocumentNode.SelectNodes(@"//li[contains(@class, 'item_post')]") is { } itemPostNode)
+            {
                 foreach (var pageNode in itemPostNode)
                     if (pageNode.SelectSingleNode(@".//a[contains(@class, 'link_post')]") is { } linkPostNode
                         && pageNode.SelectSingleNode(@".//strong[contains(@class, 'name')]") is { } nameNode)
                     {
                         AddImageCrawlingTask(nameNode.InnerText, null,
                             new Uri(uri, linkPostNode.Attributes["href"].Value));
+                    }
+            }
+            else if (doc.DocumentNode.SelectNodes(@"//div[contains(@class, 'area-main')]/div[contains(@class, 'area-common')]/article[contains(@class, 'article-type-common')]") is { } articleNodes)
+            {
+                foreach (var articleNode in articleNodes)
+                    if (articleNode.SelectSingleNode(@"./a[contains(@class, 'link-article')]") is { } linkArticleNode
+                        && articleNode.SelectSingleNode(@"./div[contains(@class, 'article-content')]/a[contains(@class, 'link-article')]/strong[contains(@class, 'title')]") is { } titleNode
+                        && articleNode.SelectSingleNode(@"./div[contains(@class, 'article-content')]/div[contains(@class, 'box-meta')]/span[contains(@class, 'date')]") is { } dateNode)
+                    {
+                        AddImageCrawlingTask(titleNode.InnerText, DateTime.TryParse(dateNode.InnerText, out var date) ? date : null,
+                            new Uri(uri, linkArticleNode.Attributes["href"].Value));
+                    }
+            }
+            else if (doc.DocumentNode.SelectNodes(@"//article[@id = 'content']/div[contains(@class, 'inner')]/div[contains(@class, 'post-item')]") is { } postNodes)
+                foreach (var postNode in postNodes)
+                    if (postNode.SelectSingleNode(@"./a[@href]") is { } postLinkNode
+                        && postLinkNode.SelectSingleNode(@"./span[contains(@class, 'title')]") is { } postTitleNode)
+                    {
+                        AddImageCrawlingTask(postTitleNode.InnerText, null, new Uri(uri, postLinkNode.Attributes["href"].Value));
                     }
 
             // we're done when we find no more posts

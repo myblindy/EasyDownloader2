@@ -215,7 +215,9 @@ public partial class MainViewModel : ObservableRecipient
 
         async Task download()
         {
-            using var srcStream = image.Link.IsLoopback ? File.OpenRead(image.Link.LocalPath) : await App.HttpClient.GetStreamAsync(image.Link);
+            using var srcStream = image.RawBytes is not null ? new MemoryStream(image.RawBytes) 
+                : image.Link.IsLoopback ? File.OpenRead(image.Link.LocalPath) 
+                : await App.HttpClient.GetStreamAsync(image.Link);
             using var dstStream = File.Create(localFileName!);
             await srcStream.CopyToAsync(dstStream);
         }

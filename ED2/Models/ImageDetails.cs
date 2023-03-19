@@ -37,6 +37,9 @@ public partial class ImageDetails : ObservableRecipient
     [ObservableProperty]
     Uri? link;
 
+    [ObservableProperty]
+    byte[]? rawBytes;
+
     partial void OnLinkChanged(Uri? value)
     {
         if (value is null || IsCompleted) return;
@@ -46,6 +49,7 @@ public partial class ImageDetails : ObservableRecipient
         _ = Task.Run(async () =>
         {
             var rawBytes = value!.IsLoopback ? File.ReadAllBytes(value.LocalPath) : await App.HttpClient.GetByteArrayAsync(value);
+            MainViewModel.MainDispatcherQueue.TryEnqueue(() => this.RawBytes = rawBytes);
 
             using var tempStream = new MemoryStream();
             tempStream.Write(rawBytes);
