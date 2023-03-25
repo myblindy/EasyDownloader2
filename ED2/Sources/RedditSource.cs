@@ -90,8 +90,9 @@ partial class RedditSource : BaseSource
 
     public override async Task OnSaveImage(ImageDetails imageDetails)
     {
+        // the API is horrendous and sleeps synchronously, run it on a separate thread
         if (imageDetails is RedditImageDetails redditImageDetails)
-            await redditImageDetails.Post.UpvoteAsync();
+            await Task.Run(redditImageDetails.Post.UpvoteAsync);
     }
 
     [GeneratedRegex(@"^(?:https?:\/\/)?(?:www.)?(reddit\.com\/r\/([^/]+))")]
