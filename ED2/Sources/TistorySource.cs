@@ -68,7 +68,12 @@ partial class TistorySource : BaseSource
                     return images;
                 }));
 
-            if (doc.DocumentNode.SelectNodes(@"//li[contains(@class, 'item_category')]") is { } itemCategoryNode)
+            if (uri.Host == "yuna1004.tistory.com"
+                && doc.DocumentNode.SelectSingleNode(@"//div[contains(@class, 'title')]/a[@href]") is { } titleNode)
+            {
+                AddImageCrawlingTask(titleNode.InnerText, null, uri);
+            }
+            else if (doc.DocumentNode.SelectNodes(@"//li[contains(@class, 'item_category')]") is { } itemCategoryNode)
             {
                 foreach (var pageNode in itemCategoryNode)
                     if (pageNode.SelectNodes(".//a[contains(@class, 'link_category')]") is [{ } firstChildNode]
@@ -93,10 +98,10 @@ partial class TistorySource : BaseSource
             {
                 foreach (var articleNode in articleNodes)
                     if (articleNode.SelectSingleNode(@"./a[contains(@class, 'link-article')]") is { } linkArticleNode
-                        && articleNode.SelectSingleNode(@"./div[contains(@class, 'article-content')]/a[contains(@class, 'link-article')]/strong[contains(@class, 'title')]") is { } titleNode
+                        && articleNode.SelectSingleNode(@"./div[contains(@class, 'article-content')]/a[contains(@class, 'link-article')]/strong[contains(@class, 'title')]") is { } titleNode2
                         && articleNode.SelectSingleNode(@"./div[contains(@class, 'article-content')]/div[contains(@class, 'box-meta')]/span[contains(@class, 'date')]") is { } dateNode)
                     {
-                        AddImageCrawlingTask(titleNode.InnerText, DateTime.TryParse(dateNode.InnerText, out var date) ? date : null,
+                        AddImageCrawlingTask(titleNode2.InnerText, DateTime.TryParse(dateNode.InnerText, out var date) ? date : null,
                             new Uri(uri, linkArticleNode.Attributes["href"].Value));
                     }
             }

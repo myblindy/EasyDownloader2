@@ -45,6 +45,7 @@ class LocalSource : BaseSource
         return Task.CompletedTask;
     }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public override async IAsyncEnumerable<ImageDetails> EnumerateImageDetails()
     {
         foreach (var item in Directory.EnumerateFiles(path!, "*", SearchOption.AllDirectories))
@@ -60,6 +61,7 @@ class LocalSource : BaseSource
                 };
             }
     }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
     public override Task OnSaveImage(ImageDetails imageDetails) => Task.CompletedTask;
 }
