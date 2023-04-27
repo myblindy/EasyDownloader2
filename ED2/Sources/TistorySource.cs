@@ -16,7 +16,8 @@ partial class TistorySource : BaseSource
     {
         if (UriRegex().Match(uri.ToString()) is { Success: true } m)
         {
-            normalizedUri = new($"https://{m.Groups[1].Value}/");
+            var proto = uri.Host == "firstlove-rose.com" ? "http://" : "https://";
+            normalizedUri = new($"{proto}{m.Groups[1].Value}/");
             prefix = m.Groups[2].Value;
             return true;
         }
@@ -28,7 +29,8 @@ partial class TistorySource : BaseSource
 
     public override Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null)
     {
-        this.uri = new("https://" + UriRegex().Match(uri.ToString()).Groups[1].Value);
+        var proto = uri.Host == "firstlove-rose.com" ? "http://" : "https://";
+        this.uri = new(proto + UriRegex().Match(uri.ToString()).Groups[1].Value);
         return Task.CompletedTask;
     }
 
@@ -36,9 +38,11 @@ partial class TistorySource : BaseSource
     {
         if (uri is null) yield break;
 
+        var prefix = uri.Host == "firstlove-rose.com" ? "/bbs/zboard.php?id=photo&" : "/?";
+
         for (int page = 1; ; ++page)
         {
-            var uri = new Uri(this.uri, $"/?page={page}");
+            var uri = new Uri(this.uri, $"{prefix}page={page}");
 
             var doc = new HtmlDocument();
             using (var stream = await App.HttpClient.GetStreamAsync(uri).ConfigureAwait(true))
@@ -54,7 +58,7 @@ partial class TistorySource : BaseSource
                         postDoc.Load(postStream);
 
                     var images = new List<(string name, DateTime? date, int width, int height, Uri uri)>();
-                    if (postDoc.DocumentNode.SelectNodes("//figure[contains(@class, 'imageblock')]") is { } imageNodes)
+                    if (postDoc.DocumentNode.SelectNodes("//figure[contains(@class, 'imageblock')]") is { Count: > 0 } imageNodes)
                         foreach (var imageNode in imageNodes)
                         {
                             if (imageNode.Attributes["data-origin-width"].Value is not { } widthString || !int.TryParse(widthString, out var width))
@@ -68,7 +72,17 @@ partial class TistorySource : BaseSource
                     return images;
                 }));
 
-            if (uri.Host == "yuna1004.tistory.com"
+            if (uri.Host == "firstlove-rose.com"
+                && doc.DocumentNode.SelectNodes(@"//a[@href]") is { } linkNodes)
+            {
+                foreach (var linkNode in linkNodes)
+                    if (Regex.Match(linkNode.Attributes["href"].Value, @"^(view\.php\?id=photo&no=\d+)$") is { Success: true } m)
+                    {
+                        AddImageCrawlingTask("", null,
+                            new Uri(new Uri(this.uri, "bbs/"), m.Groups[1].Value));
+                    }
+            }
+            else if (uri.Host == "yuna1004.tistory.com"
                 && doc.DocumentNode.SelectSingleNode(@"//div[contains(@class, 'title')]/a[@href]") is { } titleNode)
             {
                 AddImageCrawlingTask(titleNode.InnerText, null, uri);
@@ -134,6 +148,6 @@ partial class TistorySource : BaseSource
 
     public override Task OnSaveImage(ImageDetails imageDetails) => Task.CompletedTask;
 
-    [GeneratedRegex(@"^(?:https?:\/\/)?(([^.]+)\.tistory\.com)")]
+    [GeneratedRegex(@"^(?:https?:\/\/)?((?:firstlove-rose.com|([^.]+)\.tistory\.com))")]
     private static partial Regex UriRegex();
 }

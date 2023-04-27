@@ -22,7 +22,8 @@ public partial class App : Application
     {
         AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
         CookieContainer = new(),
-        AllowAutoRedirect = true
+        AllowAutoRedirect = true,
+        ServerCertificateCustomValidationCallback = (a, b, c, d) => true,
     });
 
     public static WindowEx MainWindow { get; } = new MainWindow();

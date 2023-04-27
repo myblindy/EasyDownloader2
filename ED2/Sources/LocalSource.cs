@@ -51,7 +51,8 @@ class LocalSource : BaseSource
         foreach (var item in Directory.EnumerateFiles(path!, "*", SearchOption.AllDirectories))
             if (Path.GetExtension(item) is { } extension
                 && (extension.Equals(".png", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase)
-                    || extension.Equals(".gif", StringComparison.OrdinalIgnoreCase) || extension.Equals(".png", StringComparison.OrdinalIgnoreCase)))
+                    || extension.Equals(".gif", StringComparison.OrdinalIgnoreCase) || extension.Equals(".png", StringComparison.OrdinalIgnoreCase)
+                    || extension.Equals(".webp", StringComparison.OrdinalIgnoreCase)))
             {
                 yield return new ImageDetails(mainViewModel)
                 {
