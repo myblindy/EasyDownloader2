@@ -5,7 +5,7 @@ using Tweetinvi.Parameters;
 namespace ED2.Services;
 internal class TwitterService : ITwitterService
 {
-    public TwitterClient AppTwitterClient { get; } = new("sBGgPQ0ZizPdLX4SUOEPpc9MX", "TmDP5HFE39PNxu22jJ8jLx2ZNkS1FmGBKZTbF8WtHp422J3Mwd");
+    public TwitterClient AppTwitterClient { get; } = new("huD8jnPQTMc74AHwg1KrGg8pv", "08qBm26MzpOOg62lgOnhi1CsgzJnwbhKHpa3SI7jIxoQoemkBb");
 
     static readonly Uri baseRedirectUri = new("https://easydownloader2.myblindy.com/twittercallback");
     readonly IAuthenticationRequestStore myAuthRequestStore = new LocalAuthenticationRequestStore();
@@ -24,19 +24,21 @@ internal class TwitterService : ITwitterService
             return userTwitterClient;
 
         // try to authenticate
-        var requestId = Guid.NewGuid().ToString();
-        var redirectUri = new Uri(myAuthRequestStore.AppendAuthenticationRequestIdToCallbackUrl(baseRedirectUri.ToString(), requestId));
-        var authRequestToken = await AppTwitterClient.Auth.RequestAuthenticationUrlAsync(redirectUri);
-        await myAuthRequestStore.AddAuthenticationTokenAsync(requestId, authRequestToken);
+        //var requestId = Guid.NewGuid().ToString();
+        //var redirectUri = new Uri(myAuthRequestStore.AppendAuthenticationRequestIdToCallbackUrl(baseRedirectUri.ToString(), requestId));
+        //var authRequestToken = await AppTwitterClient.Auth.RequestAuthenticationUrlAsync(redirectUri);
+        //await myAuthRequestStore.AddAuthenticationTokenAsync(requestId, authRequestToken);
 
-        if (await dialogService.ShowOAuthWindowAsync(new(authRequestToken.AuthorizationURL), redirectUri) is { } resultUri)
-        {
-            var reqParams = await RequestCredentialsParameters.FromCallbackUrlAsync(resultUri.ToString(), myAuthRequestStore);
-            var userCreds = await AppTwitterClient.Auth.RequestCredentialsAsync(reqParams);
+        //if (await dialogService.ShowOAuthWindowAsync(new(authRequestToken.AuthorizationURL), redirectUri) is { } resultUri)
+        //{
+        //    var reqParams = await RequestCredentialsParameters.FromCallbackUrlAsync(resultUri.ToString(), myAuthRequestStore);
+        //    var userCreds = await AppTwitterClient.Auth.RequestCredentialsAsync(reqParams);
 
-            return userTwitterClient = new TwitterClient(userCreds);
-        }
+        //    return userTwitterClient = new TwitterClient(userCreds);
+        //}
 
-        return null;
+        await AppTwitterClient.Auth.InitializeClientBearerTokenAsync();
+
+        return userTwitterClient = AppTwitterClient;
     }
 }

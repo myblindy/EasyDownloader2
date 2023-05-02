@@ -72,8 +72,8 @@ partial class TwitterSource : BaseSource
 
     public override async Task OnSaveImage(ImageDetails imageDetails)
     {
-        if (imageDetails is TwitterImageDetails twitterImageDetails && twitterImageDetails.Tweet is { } tweet)
-            await tweet.FavoriteAsync();
+        //if (imageDetails is TwitterImageDetails twitterImageDetails && twitterImageDetails.Tweet is { } tweet)
+        //    await tweet.FavoriteAsync();
     }
 
     [GeneratedRegex(@"^(?:https?:\/\/)?(?:mobile\.)?(twitter\.com\/([^/?]+))")]
