@@ -23,8 +23,14 @@ public partial class App : Application
         AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
         CookieContainer = new(),
         AllowAutoRedirect = true,
-        ServerCertificateCustomValidationCallback = (a, b, c, d) => true,
-    });
+        //ServerCertificateCustomValidationCallback = (a, b, c, d) => true,
+    })
+    {
+        DefaultRequestHeaders =
+        {
+            { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/112.0" }
+        }
+    };
 
     public static WindowEx MainWindow { get; } = new MainWindow();
 
