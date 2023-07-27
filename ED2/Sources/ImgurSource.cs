@@ -3,12 +3,14 @@
 partial class ImgurSource : BaseSource
 {
     readonly MainViewModel mainViewModel;
+    private readonly ImgurService imgurService;
     Func<ImageDetails>? imageDetailsGenerator;
     string? albumName;
 
-    public ImgurSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
+    public ImgurSource(MainViewModel mainViewModel, ImgurService imgurService, ILocalSettingsService localSettingsService) : base(localSettingsService)
     {
         this.mainViewModel = mainViewModel;
+        this.imgurService = imgurService;
     }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
@@ -34,28 +36,21 @@ partial class ImgurSource : BaseSource
 
     public override async IAsyncEnumerable<ImageDetails> EnumerateImageDetails()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.imgur.com/3/album/{albumName}/images");
-        request.Headers.Add("Authorization", "Client-ID 51db2131e3d1f7f");
-        var response = await App.HttpClient.SendAsync(request);
-        var resultjson = await response.Content.ReadAsStringAsync();
+        await foreach (var (uri, width, height) in imgurService.EnumerateAlbumImages(albumName!))
+        {
+            if (Path.GetExtension(uri.AbsolutePath) is ".mp4" or ".gif") continue;     // ignore video links
 
-        if (JObject.Parse(resultjson) is { } jsonObj && jsonObj["data"] is { } photoData)
-            foreach (var w in photoData)
-                if (w["link"]?.Value<string>() is { } link && Uri.TryCreate(link, UriKind.Absolute, out var uri))
-                {
-                    if (Path.GetExtension(link) is ".mp4" or ".gif") continue;     // ignore video links
+            var img = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
+            img.IsCompleted = localSettingsService.IsImageCompleted(uri);
+            img.Link = uri;
 
-                    var img = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
-                    img.IsCompleted = localSettingsService.IsImageCompleted(uri);
-                    img.Link = uri;
+            if (width > 0)
+                img.OriginalWidth = width;
+            if (height > 0)
+                img.OriginalHeight = height;
 
-                    if (w["width"]?.Value<int>() is { } width)
-                        img.OriginalWidth = width;
-                    if (w["height"]?.Value<int>() is { } height)
-                        img.OriginalHeight = height;
-
-                    yield return img;
-                }
+            yield return img;
+        }
     }
 
     public override Task OnSaveImage(ImageDetails imageDetails) => Task.CompletedTask;

@@ -113,7 +113,7 @@ public partial class MainViewModel : ObservableRecipient
         foreach (var source in new BaseSource[]
         {
             App.GetService<DirectImageSource>(),
-            App.GetService<TwitterSource>(),
+            App.GetService<TwitterScraperSource>(),
             App.GetService<RedditSource>(),
             App.GetService<ImgurSource>(),
             App.GetService<RedditGallerySource>(),
@@ -206,7 +206,9 @@ public partial class MainViewModel : ObservableRecipient
         if (path is null || image.Link is null)
             return;
 
-        var extension = SavePathRegex().Match(image.Link.LocalPath) is { Success: true } m ? m.Groups[1].Value
+        var extension =
+            SaveScrapedTwitterRegex().Match(image.Link.AbsoluteUri) is { Success: true } m2 ? m2.Groups[1].Value
+            : SavePathRegex().Match(image.Link.LocalPath) is { Success: true } m ? m.Groups[1].Value
             : throw new NotImplementedException();
         var localFileName = Path.Combine(path,
             $"{(currentPrefix is null ? null : $"{currentPrefix}-")}{string.Concat(Enumerable.Range(0, 40).Select(_ => validPathCharacters[Random.Shared.Next(validPathCharacters.Length)]))}.{extension}");
@@ -215,8 +217,8 @@ public partial class MainViewModel : ObservableRecipient
 
         async Task download()
         {
-            using var srcStream = image.RawBytes is not null ? new MemoryStream(image.RawBytes) 
-                : image.Link.IsLoopback ? File.OpenRead(image.Link.LocalPath) 
+            using var srcStream = image.RawBytes is not null ? new MemoryStream(image.RawBytes)
+                : image.Link.IsLoopback ? File.OpenRead(image.Link.LocalPath)
                 : await App.HttpClient.GetStreamAsync(image.Link);
             using var dstStream = File.Create(localFileName!);
             await srcStream.CopyToAsync(dstStream);
@@ -225,6 +227,9 @@ public partial class MainViewModel : ObservableRecipient
         await Task.WhenAll(download(), currentSource is null ? Task.CompletedTask : currentSource.OnSaveImage(image));
     }
 
-    [GeneratedRegex(@"[/\\][^/\\:]+(?:\.([^:.]+?))(?::.*?)?$")]
+    [GeneratedRegex(@"format=([^&]+)")]
+    private static partial Regex SaveScrapedTwitterRegex();
+
+    [GeneratedRegex(@"[\/\\][^\/\\:]+(?:\.([^:.]+?))(?::.*?)?$")]
     private static partial Regex SavePathRegex();
 }

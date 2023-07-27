@@ -64,7 +64,9 @@ public partial class App : Application
                 services.AddSingleton<IPageService, PageService>();
                 services.AddSingleton<INavigationService, NavigationService>();
                 services.AddSingleton<IDialogService, DialogService>();
-                services.AddSingleton<ITwitterService, TwitterService>();
+                services.AddSingleton<TwitterService>();
+                services.AddSingleton<ImgurService>();
+                services.AddSingleton<TwitterScraperService>();
                 services.AddSingleton<IRedditService, RedditService>();
                 services.AddSingleton<IJumpListService, JumpListService>();
 
@@ -81,6 +83,7 @@ public partial class App : Application
 
                 // Sources
                 services.AddTransient<TwitterSource>();
+                services.AddTransient<TwitterScraperSource>();
                 services.AddTransient<RedditSource>();
                 services.AddTransient<DirectImageSource>();
                 services.AddTransient<ImgurSource>();

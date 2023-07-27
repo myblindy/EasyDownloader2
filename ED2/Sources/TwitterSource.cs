@@ -6,11 +6,11 @@ namespace ED2.Sources;
 partial class TwitterSource : BaseSource
 {
     readonly MainViewModel mainViewModel;
-    readonly ITwitterService twitterService;
+    readonly TwitterService twitterService;
     TwitterClient? userTwitterClient;
     string? username;
 
-    public TwitterSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, ITwitterService twitterService) 
+    public TwitterSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, TwitterService twitterService) 
         : base(localSettingsService)
     {
         this.mainViewModel = mainViewModel;

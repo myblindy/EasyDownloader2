@@ -3,7 +3,7 @@ using Tweetinvi.Auth;
 using Tweetinvi.Parameters;
 
 namespace ED2.Services;
-internal class TwitterService : ITwitterService
+internal class TwitterService 
 {
     public TwitterClient AppTwitterClient { get; } = new("huD8jnPQTMc74AHwg1KrGg8pv", "08qBm26MzpOOg62lgOnhi1CsgzJnwbhKHpa3SI7jIxoQoemkBb");
 
