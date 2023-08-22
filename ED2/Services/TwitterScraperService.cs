@@ -57,7 +57,7 @@ class TwitterScraperService
 
             if (Regex.Match(url, @"(https:\/\/pbs\.twimg\.com\/media\/[^?]+\?format=[^&]+&name=).*") is { Success: true } m)
             {
-                var fullUrl = m.Groups[1].Value + "orig";
+                var fullUrl = m.Groups[1].Value.Replace("format=webp", "format=jpg") + "orig";
 
                 service.Uris.Add(new(fullUrl));
             }

@@ -9,7 +9,6 @@ internal partial class ImgurService
 {
     private readonly IDialogService dialogService;
     IApiClient? apiClient;
-    HttpClient? httpClient;
 
     readonly AsyncMonitor connectSync = new();
 
@@ -22,7 +21,7 @@ internal partial class ImgurService
     {
         await EnsureConnected();
 
-        var imageEndpoint = new AlbumEndpoint(apiClient, httpClient);
+        var imageEndpoint = new AlbumEndpoint(apiClient, new());
         foreach (var image in await imageEndpoint.GetImagesAsync(albumId, ct))
             yield return (new(image.Link), image.Width, image.Height);
 
@@ -36,8 +35,7 @@ internal partial class ImgurService
         using (await connectSync.EnterAsync())
         {
             apiClient = new ApiClient("8cbed3b16b6456c", "9ca0de50071cfa64be9b02db3bdacca1cb794edf");
-            httpClient = new();
-            var oAuth2Endpoint = new OAuth2Endpoint(apiClient, httpClient);
+            var oAuth2Endpoint = new OAuth2Endpoint(apiClient, new());
             var authUrl = oAuth2Endpoint.GetAuthorizationUrl();
 
             var resultUri = await dialogService.ShowOAuthWindowAsync(new(authUrl), new("http://localhost/ED2-oauth2-imgur"));

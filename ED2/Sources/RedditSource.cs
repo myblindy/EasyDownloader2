@@ -1,5 +1,6 @@
 ﻿using Reddit;
 using Reddit.Controllers;
+using System.Collections.Concurrent;
 
 namespace ED2.Sources;
 
@@ -88,10 +89,11 @@ partial class RedditSource : BaseSource
             }
     }
 
+    readonly ConcurrentBag<Uri> upvotedPosts = new();
     public override async Task OnSaveImage(ImageDetails imageDetails)
     {
         // the API is horrendous and sleeps synchronously, run it on a separate thread
-        if (imageDetails is RedditImageDetails redditImageDetails)
+        if (imageDetails is RedditImageDetails redditImageDetails && !upvotedPosts.Contains(new(redditImageDetails.Post.Permalink, UriKind.RelativeOrAbsolute)))
             await Task.Run(redditImageDetails.Post.UpvoteAsync);
     }
 
