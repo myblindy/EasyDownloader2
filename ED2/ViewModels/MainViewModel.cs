@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using CefSharp.DevTools.CSS;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
 
@@ -56,6 +58,33 @@ public partial class MainViewModel : ObservableRecipient
 
         localSettingsService.ReadSettingAsync(nameof(RequestedImageQuality), ImageQuality.HD)
             .ContinueWith(async t => RequestedImageQuality = await t, TaskContinuationOptions.ExecuteSynchronously);
+
+        _ = StartClipboardListenerAsync();
+    }
+
+    async Task StartClipboardListenerAsync()
+    {
+        var first = true;
+        Uri? lastUri = null;
+        while (true)
+        {
+            var content = Clipboard.GetContent();
+            if (content.Contains(StandardDataFormats.Text))
+            {
+                var text = await content.GetTextAsync();
+                if (text is not null && Uri.TryCreate(text, UriKind.Absolute, out var uri))
+                    if (!first && lastUri != uri)
+                    {
+                        lastUri = uri;
+                        await InternalOpenAsync(uri, ignoreErrors: true);
+                    }
+                    else if (first)
+                        lastUri = uri;
+            }
+
+            first = false;
+            await Task.Delay(TimeSpan.FromSeconds(1));
+        }
     }
 
     public DispatcherQueue MainDispatcherQueue { get; } = DispatcherQueue.GetForCurrentThread();
@@ -104,12 +133,10 @@ public partial class MainViewModel : ObservableRecipient
     bool isLoadingDone = true;
 
     [RelayCommand(CanExecute = nameof(IsLoadingDone))]
-    async Task OpenAsync(Uri uri)
-    {
-        Images.Clear();
-        CurrentUri = uri;
-        IsOpening = false;
+    Task OpenAsync(Uri uri) => InternalOpenAsync(uri);
 
+    async Task InternalOpenAsync(Uri uri, bool ignoreErrors = false)
+    {
         foreach (var source in new BaseSource[]
         {
             App.GetService<DirectImageSource>(),
@@ -123,6 +150,10 @@ public partial class MainViewModel : ObservableRecipient
         {
             if (source.CanHandle(uri, out var normalizedUri, out var currentPrefix))
             {
+                Images.Clear();
+                CurrentUri = uri;
+                IsOpening = false;
+
                 CurrentNormalizedUri = normalizedUri;
                 this.currentPrefix = currentPrefix;
 
@@ -145,8 +176,12 @@ public partial class MainViewModel : ObservableRecipient
             }
         }
 
-        CurrentNormalizedUri = null;
-        await dialogService.ShowErrorAsync("Unable to find a loader for the given URI.");
+        if (!ignoreErrors)
+        {
+            Images.Clear();
+            CurrentNormalizedUri = null;
+            await dialogService.ShowErrorAsync("Unable to find a loader for the given URI.");
+        }
     }
 
     const int MaxImagesPerPage = 50;
