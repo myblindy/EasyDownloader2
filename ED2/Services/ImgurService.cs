@@ -5,17 +5,11 @@ using Nito.AsyncEx;
 using System.Runtime.CompilerServices;
 
 namespace ED2.Services;
-internal partial class ImgurService
+internal partial class ImgurService(IDialogService dialogService)
 {
-    private readonly IDialogService dialogService;
     IApiClient? apiClient;
 
     readonly AsyncMonitor connectSync = new();
-
-    public ImgurService(IDialogService dialogService)
-    {
-        this.dialogService = dialogService;
-    }
 
     public async IAsyncEnumerable<(Uri uri, int width, int height)> EnumerateAlbumImages(string albumId, [EnumeratorCancellation] CancellationToken ct = default)
     {

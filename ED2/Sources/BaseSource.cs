@@ -1,12 +1,8 @@
 ﻿namespace ED2.Sources;
 
-abstract class BaseSource
+abstract class BaseSource(ILocalSettingsService localSettingsService)
 {
-    protected readonly ILocalSettingsService localSettingsService;
-    protected BaseSource(ILocalSettingsService localSettingsService)
-    {
-        this.localSettingsService = localSettingsService;
-    }
+    protected readonly ILocalSettingsService localSettingsService = localSettingsService;
 
     public static (int scaledWidth, int scaledHeight) GetScaledSize(int width, int height)
     {

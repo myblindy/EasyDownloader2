@@ -90,6 +90,7 @@ public partial class App : Application
                 services.AddTransient<RedditGallerySource>();
                 services.AddTransient<TistorySource>();
                 services.AddTransient<LocalSource>();
+                services.AddTransient<KpoppingSource>();
 
                 // Configuration
                 services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

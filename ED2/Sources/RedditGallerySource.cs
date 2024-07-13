@@ -2,16 +2,11 @@
 
 namespace ED2.Sources;
 
-partial class RedditGallerySource : BaseSource
+partial class RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) 
+    : BaseSource(localSettingsService)
 {
-    readonly MainViewModel mainViewModel;
     Func<ImageDetails>? imageDetailsGenerator;
     Uri? uri;
-
-    public RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
-    {
-        this.mainViewModel = mainViewModel;
-    }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
     {

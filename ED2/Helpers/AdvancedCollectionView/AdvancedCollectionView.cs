@@ -28,7 +28,7 @@ namespace MB.CommunityToolkit.WinUI.UI
 
         private readonly bool _liveShapingEnabled;
 
-        private readonly HashSet<string> _observedFilterProperties = new();
+        private readonly HashSet<string> _observedFilterProperties = [];
 
         private IList _source;
 
@@ -53,10 +53,10 @@ namespace MB.CommunityToolkit.WinUI.UI
         public AdvancedCollectionView(IList source, bool isLiveShaping = false)
         {
             _liveShapingEnabled = isLiveShaping;
-            _view = new List<object>();
-            _sortDescriptions = new ObservableCollection<SortDescription>();
+            _view = [];
+            _sortDescriptions = [];
             _sortDescriptions.CollectionChanged += SortDescriptions_CollectionChanged;
-            _sortProperties = new Dictionary<string, PropertyInfo>();
+            _sortProperties = [];
             Source = source;
         }
 

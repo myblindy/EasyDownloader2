@@ -4,19 +4,11 @@ using System.Collections.Concurrent;
 
 namespace ED2.Sources;
 
-partial class RedditSource : BaseSource
+partial class RedditSource(MainViewModel mainViewModel, IRedditService redditService, ILocalSettingsService localSettingsService) : BaseSource(localSettingsService)
 {
-    readonly MainViewModel mainViewModel;
-    readonly IRedditService redditService;
     DispatcherQueue? mainDispatcherQueue;
     RedditClient? redditClient;
     string? subReddit;
-
-    public RedditSource(MainViewModel mainViewModel, IRedditService redditService, ILocalSettingsService localSettingsService) : base(localSettingsService)
-    {
-        this.mainViewModel = mainViewModel;
-        this.redditService = redditService;
-    }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, [NotNullWhen(true)] out string? prefix)
     {
@@ -89,7 +81,7 @@ partial class RedditSource : BaseSource
             }
     }
 
-    readonly ConcurrentBag<Uri> upvotedPosts = new();
+    readonly ConcurrentBag<Uri> upvotedPosts = [];
     public override async Task OnSaveImage(ImageDetails imageDetails)
     {
         // the API is horrendous and sleeps synchronously, run it on a separate thread
@@ -101,11 +93,7 @@ partial class RedditSource : BaseSource
     private static partial Regex UriRegex();
 }
 
-class RedditImageDetails : ImageDetails
+class RedditImageDetails(MainViewModel mainViewModel) : ImageDetails(mainViewModel)
 {
-    public RedditImageDetails(MainViewModel mainViewModel) : base(mainViewModel)
-    {
-    }
-
     public required Post Post { get; init; }
 }

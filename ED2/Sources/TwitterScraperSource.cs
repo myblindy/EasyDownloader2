@@ -1,20 +1,8 @@
-﻿using Tweetinvi;
-using Tweetinvi.Models;
+﻿namespace ED2.Sources;
 
-namespace ED2.Sources;
-
-partial class TwitterScraperSource : BaseSource
+partial class TwitterScraperSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, TwitterScraperService twitterService) : BaseSource(localSettingsService)
 {
-    readonly MainViewModel mainViewModel;
-    readonly TwitterScraperService twitterService;
     string? username;
-
-    public TwitterScraperSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, TwitterScraperService twitterService)
-        : base(localSettingsService)
-    {
-        this.mainViewModel = mainViewModel;
-        this.twitterService = twitterService;
-    }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, [NotNullWhen(true)] out string? prefix)
     {
@@ -38,7 +26,7 @@ partial class TwitterScraperSource : BaseSource
 
     public override async IAsyncEnumerable<ImageDetails> EnumerateImageDetails()
     {
-        await foreach (var uri in twitterService.EnumerateMediaAsync(new($"https://twitter.com/{username}")))
+        await foreach (var uri in twitterService.EnumerateMediaAsync(new($"https://x.com/{username}")))
         {
             yield return new ImageDetails(mainViewModel)
             {
@@ -53,6 +41,6 @@ partial class TwitterScraperSource : BaseSource
         return Task.CompletedTask;
     }
 
-    [GeneratedRegex(@"^(?:https?:\/\/)?(?:mobile\.)?(twitter\.com\/([^/?]+))")]
+    [GeneratedRegex(@"^(?:https?:\/\/)?(?:mobile\.)?((?:twitter|x)\.com\/([^/?]+))")]
     private static partial Regex UriRegex();
 }

@@ -10,11 +10,6 @@ public sealed partial class MainPage : Page
     {
         InitializeComponent();
 
-        //ViewModel.PropertyChanged += (s, e) =>
-        //{
-        //    if (e.PropertyName is nameof(ViewModel.IsOpening) && ViewModel.IsOpening)
-        //        _ = FocusManager.TryFocusAsync(OpenBox, FocusState.Programmatic);
-        //};
         Loaded += (s, e) => OpenBox.Focus(FocusState.Keyboard);
 
     }
@@ -22,12 +17,7 @@ public sealed partial class MainPage : Page
     private async void OpenBoxQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
         if (Uri.TryCreate(sender.Text, UriKind.RelativeOrAbsolute, out var uri))
-        {
             await ViewModel.OpenCommand.ExecuteAsync(uri);
-
-            if (ViewModel.CurrentNormalizedUri is not null)
-                ViewModel.LocalSettingsService.AddSuggestion(ViewModel.CurrentNormalizedUri);
-        }
         else
             await dialogService.ShowErrorAsync("Unrecognized path format.");
     }

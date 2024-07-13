@@ -112,12 +112,12 @@ public class LocalSettingsService : ILocalSettingsService
         if (collection.Count() == 0)
             collection.Insert(new GeneralDbSettings()
             {
-                RecentlyUsedUris = new() { suggestion }
+                RecentlyUsedUris = [suggestion]
             });
         else
         {
             var settings = collection.FindAll().First();
-            settings.RecentlyUsedUris ??= new();
+            settings.RecentlyUsedUris ??= [];
             if (!settings.RecentlyUsedUris.Contains(suggestion))
             {
                 settings.RecentlyUsedUris.Add(suggestion);

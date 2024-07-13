@@ -1,15 +1,9 @@
 ﻿namespace ED2.ViewModels;
 
-public partial class OAuthViewModel : ObservableRecipient
+public partial class OAuthViewModel(Uri uri, Uri expectedUri) : ObservableRecipient
 {
-    public OAuthViewModel(Uri uri, Uri expectedUri)
-    {
-        Uri = uri;
-        ExpectedUri = expectedUri;
-    }
-
-    public Uri Uri { get; }
-    public Uri ExpectedUri { get; }
+    public Uri Uri { get; } = uri;
+    public Uri ExpectedUri { get; } = expectedUri;
 
     public Uri? Result { get; set; }
 }

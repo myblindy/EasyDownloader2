@@ -2,17 +2,10 @@
 using Reddit.AuthTokenRetriever;
 
 namespace ED2.Services;
-internal class RedditService : IRedditService
+internal class RedditService(IDialogService dialogService) : IRedditService
 {
     static readonly Uri baseRedirectUri = new("http://127.0.0.1:18081/Reddit.NET/oauthRedirect");
-    readonly IDialogService dialogService;
-
     RedditClient? redditClient;
-
-    public RedditService(IDialogService dialogService)
-    {
-        this.dialogService = dialogService;
-    }
 
     public async ValueTask<RedditClient?> TryGetRedditClient()
     {

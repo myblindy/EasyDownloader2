@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ED2.Sources;
 
-namespace ED2.Sources;
-
-class LocalSource : BaseSource
+class LocalSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : BaseSource(localSettingsService)
 {
     DispatcherQueue? mainDispatcherQueue;
     string? path;
-    private readonly MainViewModel mainViewModel;
-
-    public LocalSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) : base(localSettingsService)
-    {
-        this.mainViewModel = mainViewModel;
-    }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
     {

@@ -3,19 +3,10 @@ using Tweetinvi.Models;
 
 namespace ED2.Sources;
 
-partial class TwitterSource : BaseSource
+partial class TwitterSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, TwitterService twitterService) : BaseSource(localSettingsService)
 {
-    readonly MainViewModel mainViewModel;
-    readonly TwitterService twitterService;
     TwitterClient? userTwitterClient;
     string? username;
-
-    public TwitterSource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService, TwitterService twitterService) 
-        : base(localSettingsService)
-    {
-        this.mainViewModel = mainViewModel;
-        this.twitterService = twitterService;
-    }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, [NotNullWhen(true)] out string? prefix)
     {
@@ -80,11 +71,7 @@ partial class TwitterSource : BaseSource
     private static partial Regex UriRegex();
 }
 
-class TwitterImageDetails : ImageDetails
+class TwitterImageDetails(MainViewModel mainViewModel) : ImageDetails(mainViewModel)
 {
-    public TwitterImageDetails(MainViewModel mainViewModel) : base(mainViewModel)
-    {
-    }
-
     public required ITweet Tweet { get; init; }
 }

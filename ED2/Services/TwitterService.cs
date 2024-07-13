@@ -1,22 +1,14 @@
 ﻿using Tweetinvi;
 using Tweetinvi.Auth;
-using Tweetinvi.Parameters;
 
 namespace ED2.Services;
-internal class TwitterService 
+internal class TwitterService(IDialogService dialogService)
 {
     public TwitterClient AppTwitterClient { get; } = new("huD8jnPQTMc74AHwg1KrGg8pv", "08qBm26MzpOOg62lgOnhi1CsgzJnwbhKHpa3SI7jIxoQoemkBb");
 
     static readonly Uri baseRedirectUri = new("https://easydownloader2.myblindy.com/twittercallback");
     readonly IAuthenticationRequestStore myAuthRequestStore = new LocalAuthenticationRequestStore();
-    readonly IDialogService dialogService;
-
     TwitterClient? userTwitterClient;
-
-    public TwitterService(IDialogService dialogService)
-    {
-        this.dialogService = dialogService;
-    }
 
     public async ValueTask<TwitterClient?> TryGetUserTwitterClient()
     {

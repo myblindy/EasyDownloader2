@@ -1,17 +1,9 @@
 ﻿namespace ED2.Sources;
 
-partial class ImgurSource : BaseSource
+partial class ImgurSource(MainViewModel mainViewModel, ImgurService imgurService, ILocalSettingsService localSettingsService) : BaseSource(localSettingsService)
 {
-    readonly MainViewModel mainViewModel;
-    private readonly ImgurService imgurService;
     Func<ImageDetails>? imageDetailsGenerator;
     string? albumName;
-
-    public ImgurSource(MainViewModel mainViewModel, ImgurService imgurService, ILocalSettingsService localSettingsService) : base(localSettingsService)
-    {
-        this.mainViewModel = mainViewModel;
-        this.imgurService = imgurService;
-    }
 
     public override bool CanHandle(Uri uri, [NotNullWhen(true)] out Uri? normalizedUri, out string? prefix)
     {

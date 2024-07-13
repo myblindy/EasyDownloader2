@@ -11,22 +11,28 @@ namespace MB.CommunityToolkit.WinUI.UI
     /// <summary>
     /// Sort description
     /// </summary>
-    public class SortDescription
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="SortDescription"/> class.
+    /// </remarks>
+    /// <param name="propertyName">Name of property to sort on</param>
+    /// <param name="direction">Direction of sort</param>
+    /// <param name="comparer">Comparer to use. If null, will use default comparer</param>
+    public class SortDescription(string propertyName, SortDirection direction, IComparer comparer = null)
     {
         /// <summary>
         /// Gets the name of property to sort on
         /// </summary>
-        public string PropertyName { get; }
+        public string PropertyName { get; } = propertyName;
 
         /// <summary>
         /// Gets the direction of sort
         /// </summary>
-        public SortDirection Direction { get; }
+        public SortDirection Direction { get; } = direction;
 
         /// <summary>
         /// Gets the comparer
         /// </summary>
-        public IComparer Comparer { get; }
+        public IComparer Comparer { get; } = comparer ?? ObjectComparer.Instance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SortDescription"/> class that describes
@@ -37,19 +43,6 @@ namespace MB.CommunityToolkit.WinUI.UI
         public SortDescription(SortDirection direction, IComparer comparer = null)
             : this(null, direction, comparer)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SortDescription"/> class.
-        /// </summary>
-        /// <param name="propertyName">Name of property to sort on</param>
-        /// <param name="direction">Direction of sort</param>
-        /// <param name="comparer">Comparer to use. If null, will use default comparer</param>
-        public SortDescription(string propertyName, SortDirection direction, IComparer comparer = null)
-        {
-            PropertyName = propertyName;
-            Direction = direction;
-            Comparer = comparer ?? ObjectComparer.Instance;
         }
 
         private class ObjectComparer : IComparer

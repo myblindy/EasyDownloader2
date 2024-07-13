@@ -12,12 +12,9 @@ public enum ImageQuality
     UHD
 }
 
-public partial class ImageDetails : ObservableRecipient
+public partial class ImageDetails(MainViewModel mainViewModel) : ObservableRecipient
 {
-    public MainViewModel MainViewModel { get; }
-
-    public ImageDetails(MainViewModel mainViewModel) =>
-        MainViewModel = mainViewModel;
+    public MainViewModel MainViewModel { get; } = mainViewModel;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ScaledWidth))]
@@ -60,6 +57,9 @@ public partial class ImageDetails : ObservableRecipient
             var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
             var (scaledWidth, scaledHeight) = BaseSource.GetScaledSize(originalWidth, originalHeight);
 
+            MainViewModel.MainDispatcherQueue.TryEnqueue(() =>
+                (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight));
+
             inputStream.Seek(0);
             var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
                 new BitmapTransform
@@ -73,8 +73,6 @@ public partial class ImageDetails : ObservableRecipient
             {
                 var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
                 sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
-
-                (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight);
 
                 --MainViewModel.LoadingImages;
                 ++MainViewModel.LoadedImages;

@@ -1,9 +1,4 @@
-﻿using CefSharp.DevTools.CSS;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Win32;
-using Windows.Win32.UI.Shell;
+﻿using Windows.ApplicationModel.DataTransfer;
 
 namespace ED2.ViewModels;
 
@@ -146,6 +141,7 @@ public partial class MainViewModel : ObservableRecipient
             App.GetService<RedditGallerySource>(),
             App.GetService<TistorySource>(),
             App.GetService<LocalSource>(),
+            App.GetService<KpoppingSource>(),
         })
         {
             if (source.CanHandle(uri, out var normalizedUri, out var currentPrefix))
@@ -161,6 +157,9 @@ public partial class MainViewModel : ObservableRecipient
                 cancellationTokenSource = new();
 
                 currentSource = source;
+
+                if (CurrentNormalizedUri is not null)
+                    LocalSettingsService.AddSuggestion(CurrentNormalizedUri);
 
                 try
                 {
@@ -255,6 +254,7 @@ public partial class MainViewModel : ObservableRecipient
             using var srcStream = image.RawBytes is not null ? new MemoryStream(image.RawBytes)
                 : image.Link.IsLoopback ? File.OpenRead(image.Link.LocalPath)
                 : await App.HttpClient.GetStreamAsync(image.Link);
+            Directory.CreateDirectory(Path.GetDirectoryName(localFileName)!);
             using var dstStream = File.Create(localFileName!);
             await srcStream.CopyToAsync(dstStream);
         }

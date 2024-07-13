@@ -5,9 +5,10 @@ using System.Collections.Concurrent;
 
 namespace ED2.Services;
 
-class TwitterScraperService
+class TwitterScraperService : IDisposable
 {
     ChromiumWebBrowser? wb;
+    private bool disposedValue;
 
     public async IAsyncEnumerable<Uri> EnumerateMediaAsync(Uri timeline)
     {
@@ -40,16 +41,9 @@ class TwitterScraperService
 
     bool Loaded { get; set; }
     CancellationTokenSource CancellationTokenSource { get; set; } = new();
-    ConcurrentBag<Uri> Uris { get; } = new();
-    class BasicRequestHandler : RequestHandler
+    ConcurrentBag<Uri> Uris { get; } = [];
+    class BasicRequestHandler(TwitterScraperService service) : RequestHandler
     {
-        private readonly TwitterScraperService service;
-
-        public BasicRequestHandler(TwitterScraperService service)
-        {
-            this.service = service;
-        }
-
         protected override IResourceRequestHandler GetResourceRequestHandler(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, bool isNavigation, bool isDownload,
             string requestInitiator, ref bool disableDefaultHandling)
         {
@@ -114,5 +108,38 @@ class TwitterScraperService
             if (e.Frame.IsMain)
                 Loaded = true;
         };
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // managed
+            }
+
+            // unmanaged
+            wb?.Dispose();
+            wb = null;
+
+            CancellationTokenSource.Dispose();
+
+            disposedValue = true;
+        }
+    }
+
+    // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+    ~TwitterScraperService()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: false);
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
