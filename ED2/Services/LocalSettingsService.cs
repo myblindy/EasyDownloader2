@@ -36,7 +36,7 @@ public class LocalSettingsService : ILocalSettingsService
     {
         if (!_isInitialized)
         {
-            _settings = await Task.Run(() => _fileService.Read<IDictionary<string, object>>(_applicationDataFolder, _localSettingsFile)) ?? new Dictionary<string, object>();
+            _settings = await _fileService.Read<IDictionary<string, object>>(_applicationDataFolder, _localSettingsFile) ?? new Dictionary<string, object>();
 
             _isInitialized = true;
         }
@@ -69,7 +69,7 @@ public class LocalSettingsService : ILocalSettingsService
             await InitializeAsync();
 
             _settings[key] = await Json.StringifyAsync(value);
-            await Task.Run(() => _fileService.Save(_applicationDataFolder, _localSettingsFile, _settings));
+            await _fileService.Save(_applicationDataFolder, _localSettingsFile, _settings);
         }
     }
 

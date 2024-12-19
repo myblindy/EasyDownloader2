@@ -8,31 +8,32 @@ namespace ED2.Core.Services;
 
 public class FileService : IFileService
 {
-    public T Read<T>(string folderPath, string fileName)
+    public async Task<T> Read<T>(string folderPath, string fileName)
     {
         var path = Path.Combine(folderPath, fileName);
         if (File.Exists(path))
         {
-            var json = File.ReadAllText(path);
+            var json = await File.ReadAllTextAsync(path).ConfigureAwait(false);
             return JsonConvert.DeserializeObject<T>(json);
         }
 
         return default;
     }
 
-    public void Save<T>(string folderPath, string fileName, T content)
+    public async Task Save<T>(string folderPath, string fileName, T content)
     {
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
         var fileContent = JsonConvert.SerializeObject(content);
-        File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
+        await File.WriteAllTextAsync(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8).ConfigureAwait(false);
     }
 
-    public void Delete(string folderPath, string fileName)
+    public Task Delete(string folderPath, string fileName)
     {
         if (fileName != null && File.Exists(Path.Combine(folderPath, fileName)))
             File.Delete(Path.Combine(folderPath, fileName));
+        return Task.CompletedTask;
     }
 
     ILiteDatabase db;

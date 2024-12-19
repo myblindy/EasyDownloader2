@@ -18,17 +18,18 @@ public partial class App : Application
         return service;
     }
 
+    public static CookieContainer HttpClientCookieContainer { get; } = new();
     public static HttpClient HttpClient { get; } = new(new HttpClientHandler()
     {
         AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-        CookieContainer = new(),
+        CookieContainer = HttpClientCookieContainer,
         AllowAutoRedirect = true,
         //ServerCertificateCustomValidationCallback = (a, b, c, d) => true,
     })
     {
         DefaultRequestHeaders =
         {
-            { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/112.0" }
+            { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0" }
         }
     };
 

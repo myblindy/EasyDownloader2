@@ -39,6 +39,7 @@
                     <SplitButton.Flyout>
                         <MenuFlyout Placement="RightEdgeAlignedBottom">
                             <MenuFlyoutItem Icon="Accept" Command="{x:Bind ViewModel.MainViewModel.CompleteAllImagesCommand}" Text="Complete All"/>
+                            <MenuFlyoutItem Icon="Bullets" Command="{x:Bind ViewModel.MainViewModel.DownloadAndCompleteAllImagesCommand}" Text="Download, Complete All and Load Next"/>
                             <MenuFlyoutItem Icon="Next" Command="{x:Bind ViewModel.MainViewModel.LoadNextPageCommand}" Text="Load Next"/>
                         </MenuFlyout>
                     </SplitButton.Flyout>

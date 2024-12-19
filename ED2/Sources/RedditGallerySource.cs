@@ -2,7 +2,7 @@
 
 namespace ED2.Sources;
 
-partial class RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService) 
+partial class RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsService localSettingsService)
     : BaseSource(localSettingsService)
 {
     Func<ImageDetails>? imageDetailsGenerator;
@@ -35,25 +35,39 @@ partial class RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsSer
         using (var pageStream = await App.HttpClient.GetStreamAsync(uri))
             doc.Load(pageStream);
 
-        const string jsonVarName = "window.___r";
-        var json = JObject.Parse(WindowJsVarAssignmentRegex().Replace(doc.DocumentNode.SelectSingleNode($"//script[contains(.,'{jsonVarName}')]").InnerText, ""));
+        HashSet<Uri> images = [];
 
-        if (json["posts"]?["models"]?.Values()?.First()?["media"]?["mediaMetadata"] is { } mediaMetaData)
-            foreach (var previewPath in mediaMetaData.Select(w => w.First()["s"]?["u"]?.Value<string>()).Where(path => !string.IsNullOrWhiteSpace(path)))
-            {
-                if (PreviewRedditUrlRegex().Match(previewPath!) is not { Success: true } m
-                    || !m.Groups[1].Success)
-                {
-                    continue;
-                }
+        if (doc.DocumentNode.SelectSingleNode(@"//shreddit-redirect") is not { } commentsPageNode
+            || commentsPageNode.GetAttributeValue("href", null) is not { } commentPageUrl
+            || Uri.TryCreate($"https://reddit.com{commentPageUrl}", UriKind.Absolute, out var commentsPageUri) is false)
+        {
+            // old format?
+            if (doc.DocumentNode.SelectNodes(@"//div[contains(@class, 'gallery-tile-content')]/img") is { } previewNodes)
+                foreach (var previewNode in previewNodes)
+                    if (previewNode.GetAttributeValue("src", null) is { } src
+                        && PreviewRedditUrlRegex().Match(src) is { Success: true } m)
+                    {
+                        images.Add(new Uri("https://i." + m.Groups[1].Value));
+                    }
+        }
+        else
+        {
+            using (var commentsPageStream = await App.HttpClient.GetStreamAsync(commentsPageUri))
+                doc.Load(commentsPageStream);
 
-                var link = new Uri("https://i." + m.Groups[1].Value);
+            foreach (var previewNode in doc.DocumentNode.SelectNodes(@"//figure/img"))
+                if (previewNode.GetAttributeValue("data-lazy-srcset", null) is { } previewPaths)
+                    if (PreviewRedditUrlRegex().Matches(previewPaths!) is [.., { Success: true } m])
+                        images.Add(new Uri("https://i." + m.Groups[1].Value));
+        }
 
-                var img = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
-                img.IsCompleted = localSettingsService.IsImageCompleted(link);
-                img.Link = link;
-                yield return img;
-            }
+        foreach (var image in images)
+        {
+            var img = (imageDetailsGenerator ?? (() => new ImageDetails(mainViewModel)))();
+            img.IsCompleted = localSettingsService.IsImageCompleted(image);
+            img.Link = image;
+            yield return img;
+        }
     }
 
     public override Task OnSaveImage(ImageDetails imageDetails) => Task.CompletedTask;

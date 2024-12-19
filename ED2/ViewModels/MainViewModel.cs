@@ -224,6 +224,17 @@ public partial class MainViewModel : ObservableRecipient
         await LoadNextPageAsync();
     }
 
+    [RelayCommand(CanExecute = nameof(IsLoadingDone))]
+    async Task DownloadAndCompleteAllImagesAsync()
+    {
+        foreach (ImageDetails image in Images.ToList())
+        {
+            image.IsCompleted = true;
+            await SaveImage(image);
+        }
+        await LoadNextPageAsync();
+    }
+
     static readonly char[] validPathCharacters =
         Enumerable.Range(0, 'z' - 'a').Select(i => (char)('a' + i)).Concat(
             Enumerable.Range(0, 'Z' - 'A').Select(i => (char)('A' + i))).Concat(
