@@ -67,6 +67,9 @@ public partial class MainViewModel : ObservableRecipient
             if (content.Contains(StandardDataFormats.Text))
             {
                 var text = await content.GetTextAsync();
+                if(text is not null && Regex.IsMatch(text, @"^""[^""]*""$"))
+                    text = text[1..^1];
+
                 if (text is not null && Uri.TryCreate(text, UriKind.Absolute, out var uri))
                     if (!first && lastUri != uri)
                     {
@@ -142,6 +145,7 @@ public partial class MainViewModel : ObservableRecipient
             App.GetService<TistorySource>(),
             App.GetService<LocalSource>(),
             App.GetService<KpoppingSource>(),
+            App.GetService<ArchiveSource>(),
         })
         {
             if (source.CanHandle(uri, out var normalizedUri, out var currentPrefix))

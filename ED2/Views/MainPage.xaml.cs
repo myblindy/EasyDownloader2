@@ -16,7 +16,11 @@ public sealed partial class MainPage : Page
 
     private async void OpenBoxQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
-        if (Uri.TryCreate(sender.Text, UriKind.RelativeOrAbsolute, out var uri))
+        var text = sender.Text;
+        if (text is not null && Regex.IsMatch(text, @"^""[^""]*""$"))
+            text = text[1..^1];
+
+        if (Uri.TryCreate(text, UriKind.RelativeOrAbsolute, out var uri))
             await ViewModel.OpenCommand.ExecuteAsync(uri);
         else
             await dialogService.ShowErrorAsync("Unrecognized path format.");

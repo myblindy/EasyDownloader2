@@ -53,6 +53,24 @@ partial class RedditSource(MainViewModel mainViewModel, IRedditService redditSer
                     if (post is not LinkPost linkPost || linkPost.URL.StartsWith("/r/")) continue;
 
                     // figure out if we can find media links in this
+                    var found = false;
+
+                    async IAsyncEnumerable<ImageDetails> TryToLoadUri(Uri uri, BaseSource source)
+                    {
+                        if (source.CanHandle(uri, out _, out _))
+                        {
+                            await source.LoadAsync(uri, mainDispatcherQueue!, () => new RedditImageDetails(mainViewModel)
+                            {
+                                Post = post,
+                                Flair = string.IsNullOrWhiteSpace(post.Listing.LinkFlairText) ? null : WebUtility.HtmlDecode(post.Listing.LinkFlairText).Trim(),
+                                Title = WebUtility.HtmlDecode(post.Title),
+                                DatePosted = post.Created
+                            });
+                            await foreach (var imageDetails in source.EnumerateImageDetails())
+                                yield return imageDetails;
+                        }
+                    }
+
                     foreach (var source in new BaseSource[]
                     {
                         App.GetService<DirectImageSource>(),
@@ -60,21 +78,20 @@ partial class RedditSource(MainViewModel mainViewModel, IRedditService redditSer
                         App.GetService<RedditGallerySource>(),
                     })
                     {
-                        if (source.CanHandle(new Uri(linkPost.URL), out _, out _))
+                        await foreach (var imageDetails in TryToLoadUri(new Uri(linkPost.URL), source))
                         {
-                            await source.LoadAsync(new Uri(linkPost.URL), mainDispatcherQueue!, () => new RedditImageDetails(mainViewModel)
-                            {
-                                Post = post,
-                                Flair = string.IsNullOrWhiteSpace(post.Listing.LinkFlairText) ? null : WebUtility.HtmlDecode(post.Listing.LinkFlairText).Trim(),
-                                Title = WebUtility.HtmlDecode(post.Title),
-                                DatePosted = post.Created
-                            });
-
-                            await foreach (var imageDetails in source.EnumerateImageDetails())
-                                yield return imageDetails;
-
-                            break;
+                            yield return imageDetails;
+                            found = true;
                         }
+                        if (found) break;
+                    }
+
+                    if (!found)
+                    {
+                        // try to load the post as a gallery
+                        var gallerySource = App.GetService<RedditGallerySource>();
+                        await foreach (var imageDetails in TryToLoadUri(new Uri(new Uri("https://www.reddit.com/gallery/"), post.Id), gallerySource))
+                            yield return imageDetails;
                     }
                 }
                 beforePostId = null;

@@ -92,6 +92,7 @@ public partial class App : Application
                 services.AddTransient<TistorySource>();
                 services.AddTransient<LocalSource>();
                 services.AddTransient<KpoppingSource>();
+                services.AddTransient<ArchiveSource>();
 
                 // Configuration
                 services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
