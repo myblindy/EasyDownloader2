@@ -35,7 +35,7 @@ public sealed partial class MainPage : Page
     private void OpenBoxSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args) =>
         sender.Text = args.SelectedItem.ToString();
 
-    private void ImagePointerPressed(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    private void ImagePointerPressed(object sender, PointerRoutedEventArgs e)
     {
         var pointer = e.GetCurrentPoint((UIElement)sender);
 

@@ -46,6 +46,8 @@
                 </SplitButton>
             </AppBarElementContainer>
             <AppBarSeparator/>
+            <AppBarButton Icon="Read" Command="{x:Bind ViewModel.MainViewModel.DebugCommand}" ToolTipService.ToolTip="Debug"/>
+            <AppBarSeparator/>
             <AppBarToggleButton IsChecked="{x:Bind ViewModel.MainViewModel.ShowHorizontal, Mode=TwoWay}">Horizontal</AppBarToggleButton>
             <AppBarToggleButton IsChecked="{x:Bind ViewModel.MainViewModel.ShowVertical, Mode=TwoWay}">Vertical</AppBarToggleButton>
             <AppBarToggleButton IsChecked="{x:Bind ViewModel.MainViewModel.ShowSquare, Mode=TwoWay}">Square</AppBarToggleButton>

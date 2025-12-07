@@ -3,5 +3,5 @@
 public interface IDialogService
 {
     public Task ShowErrorAsync(string message);
-    public Task<Uri?> ShowOAuthWindowAsync(Uri uri, Uri expectedUri);
+    public Task<Uri?> ShowOAuthWindowAsync(Uri uri, Regex expectedUriRegex);
 }

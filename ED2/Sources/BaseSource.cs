@@ -21,4 +21,5 @@ abstract class BaseSource(ILocalSettingsService localSettingsService)
     public abstract Task LoadAsync(Uri uri, DispatcherQueue mainDispatcherQueue, Func<ImageDetails>? imageDetailsGenerator = null);
     public abstract IAsyncEnumerable<ImageDetails> EnumerateImageDetails();
     public abstract Task OnSaveImage(ImageDetails imageDetails);
+    public virtual Task DebugAsync() => Task.CompletedTask;
 }

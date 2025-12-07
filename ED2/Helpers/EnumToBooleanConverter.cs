@@ -1,6 +1,6 @@
 ﻿namespace ED2.Helpers;
 
-public class EnumToBooleanConverter : IValueConverter
+public partial class EnumToBooleanConverter : IValueConverter
 {
     public EnumToBooleanConverter()
     {

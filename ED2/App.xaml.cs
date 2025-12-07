@@ -87,7 +87,7 @@ public partial class App : Application
                 services.AddTransient<TwitterScraperSource>();
                 services.AddTransient<RedditSource>();
                 services.AddTransient<DirectImageSource>();
-                services.AddTransient<ImgurSource>();
+                //services.AddTransient<ImgurSource>();
                 services.AddTransient<RedditGallerySource>();
                 services.AddTransient<TistorySource>();
                 services.AddTransient<LocalSource>();

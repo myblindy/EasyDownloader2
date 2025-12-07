@@ -1,11 +1,12 @@
 ﻿using CefSharp;
 using CefSharp.Handler;
 using CefSharp.OffScreen;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 namespace ED2.Services;
 
-class TwitterScraperService : IDisposable
+partial class TwitterScraperService(ILogger<TwitterScraperService> logger) : IDisposable
 {
     ChromiumWebBrowser? wb;
     private bool disposedValue;
@@ -42,18 +43,20 @@ class TwitterScraperService : IDisposable
     bool Loaded { get; set; }
     CancellationTokenSource CancellationTokenSource { get; set; } = new();
     ConcurrentBag<Uri> Uris { get; } = [];
-    class BasicRequestHandler(TwitterScraperService service) : RequestHandler
+    class BasicRequestHandler(TwitterScraperService service, ILogger<TwitterScraperService> logger) : RequestHandler
     {
         protected override IResourceRequestHandler GetResourceRequestHandler(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, bool isNavigation, bool isDownload,
             string requestInitiator, ref bool disableDefaultHandling)
         {
             var url = request.Url;
+            logger.LogDebug("URL found: {0}", url);
 
             if (Regex.Match(url, @"(https:\/\/pbs\.twimg\.com\/media\/[^?]+\?format=[^&]+&name=).*") is { Success: true } m)
             {
                 var fullUrl = m.Groups[1].Value.Replace("format=webp", "format=jpg") + "orig";
 
                 service.Uris.Add(new(fullUrl));
+                logger.LogDebug("URL matched as media: {0}", fullUrl);
             }
 
             return base.GetResourceRequestHandler(chromiumWebBrowser, browser, frame, request, isNavigation, isDownload, requestInitiator, ref disableDefaultHandling);
@@ -64,26 +67,20 @@ class TwitterScraperService : IDisposable
     private async Task EnsureCefCreated()
     {
         const string cookies = """
-                twitter.com	TRUE	/	TRUE	1732158340	guest_id	v1%3A166908634089571450
-                twitter.com	TRUE	/	TRUE	1716347164	kdt	deExEUJrIKwjVxcuGzwDDWJdFAxYTttyqxFcthJt
-                twitter.com	TRUE	/	TRUE	1826766364	auth_token	81f28262157667a6542af941e3a731a13dc1bd57
-                twitter.com	TRUE	/	TRUE	1826766364	ct0	3bc99452dbbfb2087c542bd809d8fc7c38817599d3fe9f38a5588ed15d900779bbe81a8bf0a26e6e6bc025d753514e4961e82f30cad6043e4b131755cede970109ecb124ac7238d2b9ec1223d91597d4
-                twitter.com	TRUE	/	TRUE	1985299243	des_opt_in	Y
-                twitter.com	TRUE	/	TRUE	1835817020	dnt	1
-                help.twitter.com	TRUE	/	TRUE	1746050506	_ga	GA1.3.2101702960.1682978273
-                twitter.com	TRUE	/	TRUE	1699027332	d_prefs	MToxLGNvbnNlbnRfdmVyc2lvbjoyLHRleHRfdmVyc2lvbjoxMDAw
-                developer.twitter.com	TRUE	/	TRUE	1752282872	_ga	GA1.3.2101702960.1682978273
-                twitter.com	TRUE	/	TRUE	1752282872	_ga	GA1.2.2101702960.1682978273
-                twitter.com	TRUE	/	TRUE	1752455673	mbox	session#6de48cf9ac304bfaaf4f48864b0bee5d#1689212733|PC#6de48cf9ac304bfaaf4f48864b0bee5d.34_0#1752455673
-                twitter.com	TRUE	/	TRUE	0	_twitter_sess	BAh7CSIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%250ASGFzaHsABjoKQHVzZWR7ADoPY3JlYXRlZF9hdGwrCEWpTJ2EAToMY3NyZl9p%250AZCIlNjRjYWI3ZDJkZTk3MTJkZjEwNzJlMjViMDFmOGM4YmI6B2lkIiViZTY5%250AZDk4NTMwNzNjYWM2ZjgwZWQzZDg3YjZjYjI3Nw%253D%253D--15f0264a86db26385400a7e0dbb38974a7a92fdb
-                api.twitter.com	FALSE	/	TRUE	0	lang	en
-                twitter.com	TRUE	/	TRUE	0	at_check	true
-                twitter.com	FALSE	/	FALSE	0	lang	en
-                twitter.com	TRUE	/	TRUE	1752609171	guest_id_ads	v1%3A166908634089571450
-                twitter.com	TRUE	/	TRUE	1752609171	guest_id_marketing	v1%3A166908634089571450
-                twitter.com	TRUE	/	TRUE	1752609171	personalization_id	"v1_Dn7viZoa7MZSZEy08XreXw=="
-                twitter.com	TRUE	/	TRUE	1721073171	twid	u%3D485917107
-                """;
+            x.com	TRUE	/	TRUE	1755155409	d_prefs	MjoxLGNvbnNlbnRfdmVyc2lvbjoyLHRleHRfdmVyc2lvbjoxMDAw
+            x.com	TRUE	/	TRUE	1755155409	att	1-lpEriJwbHLHan9P7Wx2wCc0jFGIw3ksrFxIgczyO
+            x.com	TRUE	/	TRUE	1787085668	guest_id_marketing	v1%3A175261228305238894
+            x.com	TRUE	/	TRUE	1787085668	guest_id_ads	v1%3A175261228305238894
+            x.com	TRUE	/	TRUE	1782916058	personalization_id	"v1_tYha2XeKz7QTnhP8SxoY3A=="
+            x.com	TRUE	/	TRUE	1782172985	guest_id	v1%3A175261228305238894
+            x.com	FALSE	/	FALSE	1763165228	g_state	{"i_l":0}
+            x.com	TRUE	/	TRUE	1782176160	kdt	IY9gN39yiO1CVRreI6yZBEglL5zrlWA3X0TOrqw5
+            x.com	TRUE	/	TRUE	1784061668	twid	u%3D485917107
+            x.com	TRUE	/	TRUE	1782176160	ct0	d6c847d9e1fb7df8c051dd010b21db36034b2a6e5210213314e6cd467f9877ca4c360422c45167e09f0d01cf06fa94f71f12c0d2271a76f08b946e28f49078b04c65d634cd526382a6f5b3f9456e9401
+            x.com	TRUE	/	TRUE	1782176160	auth_token	1d2c1ae39729b61bb5236c3b506fb9d8d44419dd
+            x.com	FALSE	/	FALSE	0	lang	en
+            x.com	TRUE	/	TRUE	1752527466	__cf_bm	Bj0ld6CumAEp3drgZLHn8_6T1RR07iaWLF1E6f2o_NQ-1752612145-1.0.1.1-rR5NUmc1GYIdyDcwfXw6s1RRDWV1cAiEYngUO3KldeOH8.b2M8oPLbTm9USTrQnN4lVHw4lApE6HlUZHKOHrqxSwvzDwkDuFRrDag1nx6VM
+            """;
 
         if (wb is not null) return;
         wb = new("about:blank");
@@ -102,12 +99,19 @@ class TwitterScraperService : IDisposable
 
         wb.Size = new(1000, 2000);
 
-        wb.RequestHandler = new BasicRequestHandler(this);
+        wb.RequestHandler = new BasicRequestHandler(this, logger);
         wb.FrameLoadEnd += (s, e) =>
         {
             if (e.Frame.IsMain)
                 Loaded = true;
         };
+    }
+
+    public async Task<byte[]?> GetScreenshotAsync()
+    {
+        if (wb is not null)
+            return await wb.CaptureScreenshotAsync(CefSharp.DevTools.Page.CaptureScreenshotFormat.Png, 100);
+        return null;
     }
 
     protected virtual void Dispose(bool disposing)

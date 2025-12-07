@@ -32,7 +32,7 @@ sealed partial class KpoppingSource(MainViewModel mainViewModel, ILocalSettingsS
 
     record AlbumPageEntry(string? Content);
 
-    JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+    readonly JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
     public override async IAsyncEnumerable<ImageDetails> EnumerateImageDetails()
     {
         for (int albumPage = 0; ; ++albumPage)
@@ -55,6 +55,9 @@ sealed partial class KpoppingSource(MainViewModel mainViewModel, ILocalSettingsS
                 .Select(w => (url: w.Attributes["href"]?.Value, name: w.SelectSingleNode(@".//span")?.InnerText))
                 .Where(w => !string.IsNullOrWhiteSpace(w.url)))
             {
+                // this site likes to rate limit requests, so we add a random delay
+                await Task.Delay(TimeSpan.FromSeconds(Random.Shared.NextDouble() * 2));
+
                 using var photoAlbumResponse = await App.HttpClient.GetAsync(
                     new Uri(new Uri("https://kpopping.com/"), photoAlbumUrl));
                 if (!photoAlbumResponse.IsSuccessStatusCode)

@@ -45,41 +45,47 @@ public partial class ImageDetails(MainViewModel mainViewModel) : ObservableRecip
 
         _ = Task.Run(async () =>
         {
-            var rawBytes = value!.IsLoopback ? File.ReadAllBytes(value.LocalPath) : await App.HttpClient.GetByteArrayAsync(value);
-            MainViewModel.MainDispatcherQueue.TryEnqueue(() => this.RawBytes = rawBytes);
-
-            using var tempStream = new MemoryStream();
-            tempStream.Write(rawBytes);
-            tempStream.Position = 0;
-
-            using var inputStream = tempStream.AsRandomAccessStream();
-            var decoder = await BitmapDecoder.CreateAsync(inputStream);
-            var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
-            var (scaledWidth, scaledHeight) = BaseSource.GetScaledSize(originalWidth, originalHeight);
-
-            MainViewModel.MainDispatcherQueue.TryEnqueue(() =>
-                (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight));
-
-            inputStream.Seek(0);
-            var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
-                new BitmapTransform
-                {
-                    ScaledWidth = (uint)scaledWidth,
-                    ScaledHeight = (uint)scaledHeight,
-                }, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
-            var sourceDecodedPixels = pixelData.DetachPixelData();
-
-            MainViewModel.MainDispatcherQueue.TryEnqueue(() =>
+            try
             {
-                var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
-                sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
+                if (!value!.IsLoopback)
+                    await Task.Delay(TimeSpan.FromSeconds(Random.Shared.NextDouble() * 2));
+                var rawBytes = value!.IsLoopback ? File.ReadAllBytes(value.LocalPath) : await App.HttpClient.GetByteArrayAsync(value);
+                MainViewModel.MainDispatcherQueue.TryEnqueue(() => this.RawBytes = rawBytes);
 
-                --MainViewModel.LoadingImages;
-                ++MainViewModel.LoadedImages;
+                using var tempStream = new MemoryStream();
+                tempStream.Write(rawBytes);
+                tempStream.Position = 0;
 
-                ImageSource = output;
-                Loaded = true;
-            });
+                using var inputStream = tempStream.AsRandomAccessStream();
+                var decoder = await BitmapDecoder.CreateAsync(inputStream);
+                var (originalWidth, originalHeight) = ((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+                var (scaledWidth, scaledHeight) = BaseSource.GetScaledSize(originalWidth, originalHeight);
+
+                MainViewModel.MainDispatcherQueue.TryEnqueue(() =>
+                    (OriginalWidth, OriginalHeight) = (originalWidth, originalHeight));
+
+                inputStream.Seek(0);
+                var pixelData = await decoder.GetPixelDataAsync(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight,
+                    new BitmapTransform
+                    {
+                        ScaledWidth = (uint)scaledWidth,
+                        ScaledHeight = (uint)scaledHeight,
+                    }, ExifOrientationMode.IgnoreExifOrientation, ColorManagementMode.DoNotColorManage);
+                var sourceDecodedPixels = pixelData.DetachPixelData();
+
+                MainViewModel.MainDispatcherQueue.TryEnqueue(() =>
+                {
+                    var output = new WriteableBitmap((int)scaledWidth, (int)scaledHeight);
+                    sourceDecodedPixels.AsBuffer().CopyTo(output.PixelBuffer);
+
+                    --MainViewModel.LoadingImages;
+                    ++MainViewModel.LoadedImages;
+
+                    ImageSource = output;
+                    Loaded = true;
+                });
+            }
+            catch { }
         });
     }
 

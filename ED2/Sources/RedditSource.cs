@@ -74,7 +74,7 @@ partial class RedditSource(MainViewModel mainViewModel, IRedditService redditSer
                     foreach (var source in new BaseSource[]
                     {
                         App.GetService<DirectImageSource>(),
-                        App.GetService<ImgurSource>(),
+                        //App.GetService<ImgurSource>(),
                         App.GetService<RedditGallerySource>(),
                     })
                     {
@@ -110,7 +110,7 @@ partial class RedditSource(MainViewModel mainViewModel, IRedditService redditSer
     private static partial Regex UriRegex();
 }
 
-class RedditImageDetails(MainViewModel mainViewModel) : ImageDetails(mainViewModel)
+partial class RedditImageDetails(MainViewModel mainViewModel) : ImageDetails(mainViewModel)
 {
     public required Post Post { get; init; }
 }

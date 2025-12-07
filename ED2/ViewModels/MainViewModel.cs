@@ -67,7 +67,7 @@ public partial class MainViewModel : ObservableRecipient
             if (content.Contains(StandardDataFormats.Text))
             {
                 var text = await content.GetTextAsync();
-                if(text is not null && Regex.IsMatch(text, @"^""[^""]*""$"))
+                if (text is not null && Regex.IsMatch(text, @"^""[^""]*""$"))
                     text = text[1..^1];
 
                 if (text is not null && Uri.TryCreate(text, UriKind.Absolute, out var uri))
@@ -140,7 +140,7 @@ public partial class MainViewModel : ObservableRecipient
             App.GetService<DirectImageSource>(),
             App.GetService<TwitterScraperSource>(),
             App.GetService<RedditSource>(),
-            App.GetService<ImgurSource>(),
+            //App.GetService<ImgurSource>(),
             App.GetService<RedditGallerySource>(),
             App.GetService<TistorySource>(),
             App.GetService<LocalSource>(),
@@ -185,6 +185,13 @@ public partial class MainViewModel : ObservableRecipient
             CurrentNormalizedUri = null;
             await dialogService.ShowErrorAsync("Unable to find a loader for the given URI.");
         }
+    }
+
+    [RelayCommand]
+    async Task DebugAsync()
+    {
+        if (currentSource is not null)
+            await currentSource.DebugAsync();
     }
 
     const int MaxImagesPerPage = 50;
@@ -258,7 +265,7 @@ public partial class MainViewModel : ObservableRecipient
         var extension =
             SaveScrapedTwitterRegex().Match(image.Link.AbsoluteUri) is { Success: true } m2 ? m2.Groups[1].Value
             : SavePathRegex().Match(image.Link.LocalPath) is { Success: true } m ? m.Groups[1].Value
-            : throw new NotImplementedException();
+            : "jpg";
         var localFileName = Path.Combine(path,
             $"{(currentPrefix is null ? null : $"{currentPrefix}-")}{string.Concat(Enumerable.Range(0, 40).Select(_ => validPathCharacters[Random.Shared.Next(validPathCharacters.Length)]))}.{extension}");
 

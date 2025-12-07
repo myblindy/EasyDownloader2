@@ -31,35 +31,39 @@ partial class RedditGallerySource(MainViewModel mainViewModel, ILocalSettingsSer
 
     public override async IAsyncEnumerable<ImageDetails> EnumerateImageDetails()
     {
-        var doc = new HtmlDocument();
-        using (var pageStream = await App.HttpClient.GetStreamAsync(uri))
-            doc.Load(pageStream);
-
         HashSet<Uri> images = [];
-
-        if (doc.DocumentNode.SelectSingleNode(@"//shreddit-redirect") is not { } commentsPageNode
-            || commentsPageNode.GetAttributeValue("href", null) is not { } commentPageUrl
-            || Uri.TryCreate($"https://reddit.com{commentPageUrl}", UriKind.Absolute, out var commentsPageUri) is false)
+        try
         {
-            // old format?
-            if (doc.DocumentNode.SelectNodes(@"//div[contains(@class, 'gallery-tile-content')]/img") is { } previewNodes)
-                foreach (var previewNode in previewNodes)
-                    if (previewNode.GetAttributeValue("src", null) is { } src
-                        && PreviewRedditUrlRegex().Match(src) is { Success: true } m)
-                    {
-                        images.Add(new Uri("https://i." + m.Groups[1].Value));
-                    }
-        }
-        else
-        {
-            using (var commentsPageStream = await App.HttpClient.GetStreamAsync(commentsPageUri))
-                doc.Load(commentsPageStream);
+            var doc = new HtmlDocument();
+            using (var pageStream = await App.HttpClient.GetStreamAsync(uri))
+                doc.Load(pageStream);
 
-            foreach (var previewNode in doc.DocumentNode.SelectNodes(@"//figure/img"))
-                if (previewNode.GetAttributeValue("data-lazy-srcset", null) is { } previewPaths)
-                    if (PreviewRedditUrlRegex().Matches(previewPaths!) is [.., { Success: true } m])
-                        images.Add(new Uri("https://i." + m.Groups[1].Value));
+
+            if (doc.DocumentNode.SelectSingleNode(@"//shreddit-redirect") is not { } commentsPageNode
+                || commentsPageNode.GetAttributeValue("href", null) is not { } commentPageUrl
+                || Uri.TryCreate($"https://reddit.com{commentPageUrl}", UriKind.Absolute, out var commentsPageUri) is false)
+            {
+                // old format?
+                if (doc.DocumentNode.SelectNodes(@"//div[contains(@class, 'gallery-tile-content')]/img") is { } previewNodes)
+                    foreach (var previewNode in previewNodes)
+                        if (previewNode.GetAttributeValue("src", null) is { } src
+                            && PreviewRedditUrlRegex().Match(src) is { Success: true } m)
+                        {
+                            images.Add(new Uri("https://i." + m.Groups[1].Value));
+                        }
+            }
+            else
+            {
+                using (var commentsPageStream = await App.HttpClient.GetStreamAsync(commentsPageUri))
+                    doc.Load(commentsPageStream);
+
+                foreach (var previewNode in doc.DocumentNode.SelectNodes(@"//figure/img"))
+                    if (previewNode.GetAttributeValue("data-lazy-srcset", null) is { } previewPaths)
+                        if (PreviewRedditUrlRegex().Matches(previewPaths!) is [.., { Success: true } m])
+                            images.Add(new Uri("https://i." + m.Groups[1].Value));
+            }
         }
+        catch { }
 
         foreach (var image in images)
         {

@@ -26,25 +26,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="131.3.10" />
+    <PackageReference Include="CefSharp.OffScreen.NETCore" Version="141.0.110" />
+    <PackageReference Include="Imgur.NET" Version="0.1.0" />
 
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.241114003" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.0.0-experimental3" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1-RTM" />
 
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.71" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.0" />
     <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageReference Include="Reddit" Version="1.5.2" />
     <PackageReference Include="Reddit.AuthTokenRetrieverLib" Version="1.5.2" />
-    <PackageReference Include="SharpCompress" Version="0.38.0" />
+    <PackageReference Include="SharpCompress" Version="0.40.0" />
     <PackageReference Include="TweetinviAPI" Version="5.0.4" />
-    <PackageReference Include="WinUIEx" Version="2.5.0" />
-    <PackageReference Include="MB.Imgur.API" Version="5.1.0" />
+    <PackageReference Include="WinUIEx" Version="2.9.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -50,7 +50,7 @@ static class Program
         return isRedirect;
     }
 
-    private static IntPtr redirectEventHandle = IntPtr.Zero;
+    private static readonly IntPtr redirectEventHandle = IntPtr.Zero;
 
     // Do the redirection on another thread, and use a non-blocking
     // wait method to wait for the redirection to complete.

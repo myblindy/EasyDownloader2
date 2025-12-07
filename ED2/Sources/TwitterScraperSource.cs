@@ -41,6 +41,23 @@ partial class TwitterScraperSource(MainViewModel mainViewModel, ILocalSettingsSe
         return Task.CompletedTask;
     }
 
+    public override async Task DebugAsync()
+    {
+        if (await twitterService.GetScreenshotAsync().ConfigureAwait(false) is { } bytes)
+        {
+            var filename = Path.ChangeExtension(Path.GetTempFileName(), ".png");
+            await File.WriteAllBytesAsync(filename, bytes).ConfigureAwait(false);
+
+            using var process = Process.Start(new ProcessStartInfo(filename)
+            {
+                UseShellExecute = true
+            });
+            await process!.WaitForExitAsync().ConfigureAwait(false);
+
+            File.Delete(filename);
+        }
+    }
+
     [GeneratedRegex(@"^(?:https?:\/\/)?(?:mobile\.)?((?:twitter|x)\.com\/([^/?]+))")]
     private static partial Regex UriRegex();
 }

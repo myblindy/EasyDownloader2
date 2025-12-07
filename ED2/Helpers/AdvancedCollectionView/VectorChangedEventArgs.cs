@@ -17,7 +17,7 @@ namespace MB.CommunityToolkit.WinUI.UI
     /// <param name="cc">collection change type</param>
     /// <param name="index">index of item changed</param>
     /// <param name="item">item changed</param>
-    internal class VectorChangedEventArgs(CollectionChange cc, int index = -1, object item = null) : IVectorChangedEventArgs
+    internal partial class VectorChangedEventArgs(CollectionChange cc, int index = -1, object item = null) : IVectorChangedEventArgs
     {
 
         /// <summary>

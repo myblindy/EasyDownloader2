@@ -4,7 +4,6 @@ using Reddit.AuthTokenRetriever;
 namespace ED2.Services;
 internal class RedditService(IDialogService dialogService) : IRedditService
 {
-    static readonly Uri baseRedirectUri = new("http://127.0.0.1:18081/Reddit.NET/oauthRedirect");
     RedditClient? redditClient;
 
     public async ValueTask<RedditClient?> TryGetRedditClient()
@@ -22,7 +21,7 @@ internal class RedditService(IDialogService dialogService) : IRedditService
         };
         authTokenRetrieverLib.AwaitCallback();
 
-        _ = await dialogService.ShowOAuthWindowAsync(new(authTokenRetrieverLib.AuthURL("vote%20read")), baseRedirectUri);
+        _ = await dialogService.ShowOAuthWindowAsync(new(authTokenRetrieverLib.AuthURL("vote%20read")), new(@"\boauthRedirect\b"));
 
         var waitUntil = DateTime.Now + TimeSpan.FromSeconds(5);
         while (redditClient is null && DateTime.Now < waitUntil)

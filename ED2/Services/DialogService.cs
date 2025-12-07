@@ -15,9 +15,9 @@ class DialogService : IDialogService
         await dialog.ShowAsync();
     }
 
-    public async Task<Uri?> ShowOAuthWindowAsync(Uri uri, Uri expectedUri)
+    public async Task<Uri?> ShowOAuthWindowAsync(Uri uri, Regex expectedUriRegex)
     {
-        var vm = new OAuthViewModel(uri, expectedUri);
+        var vm = new OAuthViewModel(uri, expectedUriRegex);
 
         var dialog = new OAuthDialog
         {

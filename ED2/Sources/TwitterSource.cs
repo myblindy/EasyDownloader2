@@ -71,7 +71,7 @@ partial class TwitterSource(MainViewModel mainViewModel, ILocalSettingsService l
     private static partial Regex UriRegex();
 }
 
-class TwitterImageDetails(MainViewModel mainViewModel) : ImageDetails(mainViewModel)
+partial class TwitterImageDetails(MainViewModel mainViewModel) : ImageDetails(mainViewModel)
 {
     public required ITweet Tweet { get; init; }
 }

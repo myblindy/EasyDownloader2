@@ -21,7 +21,7 @@ namespace MB.CommunityToolkit.WinUI.UI
         /// <summary>
         /// Notification deferrer helper class
         /// </summary>
-        public class NotificationDeferrer : IDisposable
+        public partial class NotificationDeferrer : IDisposable
         {
             private readonly AdvancedCollectionView _acvs;
             private readonly object _currentItem;
