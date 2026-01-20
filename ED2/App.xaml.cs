@@ -68,7 +68,6 @@ public partial class App : Application
                 services.AddSingleton<TwitterService>();
                 services.AddSingleton<ImgurService>();
                 services.AddSingleton<TwitterScraperService>();
-                services.AddSingleton<IRedditService, RedditService>();
                 services.AddSingleton<IJumpListService, JumpListService>();
 
                 // Core Services
